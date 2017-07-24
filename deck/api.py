@@ -42,26 +42,71 @@ class CardViewSet(viewsets.ModelViewSet):
 
 class DeckViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.DeckSimpleSerializer
-    queryset = models.Deck.objects.all()
+    queryset = models.Deck.objects.filter(in_play=False)
     lookup_field = ('slug')
     permission_classes = (permissions.IsAuthenticated,
         deckpermissions.IsOwnerOrReadOnly)
     
     def get_queryset(self):
         since = self.request.query_params.get('since', None)
-        queryset = models.Deck.objects.filter(user_created = self.request.user)
+        queryset = models.Deck.objects.filter(in_play=False)
         search = self.request.query_params.get('search', None)
         in_play = self.request.query_params.get('in_play', None)
+        owned = self.request.query_params.get('owned', None)
         
         if since is not None:
             last_time = datetime.strptime(since, '%Y-%m-%d %H:%M:%S')
             queryset = queryset.filter(date_edited__gte=last_time)
         if search is not None:
             queryset = queryset.filter(name__icontains = search)
-        if in_play is not None:
+        if in_play is not None and self.request.user.is_staff:
             queryset = queryset.filter(in_play = search)
+        if owned is not None:
+            queryset = queryset.filter(user_created = self.request.user)
             
         return queryset
+
+    @detail_route()
+    def get_random_card(self, request, slug=None):
+        try:
+            obj = self.get_object()
+            self.check_object_permissions(request, obj)
+            serializer = serializers.CardSimpleSerializer(obj.choose_random_card, many=False)
+            return Response(serializer.data,
+                status=status.HTTP_200_OK)
+        except Exception, e:
+            print e
+            return Response({'status': 'Error grabbing card'},
+                status=status.HTTP_400_BAD_REQUEST)
+
+    #accepts a POST with a list of text and count fields
+     #ex [{"text": "Example card 1", "count": 2}, {"text": "Example card 2", "count": 1}]
+    @detail_route(methods=['POST'])
+    def add_cards(self, request, slug=None):
+        obj = self.get_object()
+        serializer = serializers.AddCardSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            for c in serializer.data:
+                obj.add_card(c['text'], c['count'])
+            return Response(serializers.DeckSimpleSerializer(obj, many=False).data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    #accepts a POST with a list of text to delete, this will delete all cards with this text
+    #ex {"texts": ["Example text 1", "Example text 2"]}
+    @detail_route(methods=['POST'])
+    def remove_cards(self, request, slug=None):
+        obj = self.get_object()
+        serializer = serializers.DeleteCardSerializer(data=request.data, many=False)
+        if serializer.is_valid():
+            print serializer.data
+            for c in serializer.data['texts']:
+                obj.remove_cards(c)
+            return Response(serializers.DeckSimpleSerializer(obj, many=False).data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, slug=None):
         queryset = self.get_queryset()
@@ -86,6 +131,7 @@ class GameRoomViewSet(viewsets.ModelViewSet):
             
         return queryset
 
+    #returns the current drawn card
     @detail_route()
     def get_current_card(self, request, slug=None):
         try:
@@ -99,6 +145,7 @@ class GameRoomViewSet(viewsets.ModelViewSet):
             return Response({'status': 'Error grabbing card'},
                 status=status.HTTP_400_BAD_REQUEST)
 
+    #draws a card if able and returns that card
     @detail_route(permission_classes=[deckpermissions.CanDraw, deckpermissions.IsPlayer])
     def draw_card(self, request, slug=None):
         obj = self.get_object()

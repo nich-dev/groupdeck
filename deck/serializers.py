@@ -60,3 +60,12 @@ class GameRoomSimpleSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug',
                 'user_created', 'players', 'deck',
                 'deck_parent', 'open_draw')
+
+class AddCardSerializer(serializers.Serializer):
+    text = serializers.CharField()
+    count = serializers.IntegerField()
+
+class DeleteCardSerializer(serializers.Serializer):
+    texts = serializers.ListField(
+        child=serializers.CharField()
+    )

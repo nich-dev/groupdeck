@@ -83,12 +83,12 @@ class Deck(models.Model):
                 self.cards.remove(c)
         super( Deck, self ).save( *args, **kw )
 
-    def add_card(self, card, count=1):
+    def add_card(self, text, count=1):
         if self.cards.count()+count > MAX_ALLOWED_CARDS:
             count = self.cards.count() - MAX_ALLOWED_CARDS
         if count > 0:
             for x in range(count):
-                new_card = Card(text = card.text, in_deck = True)
+                new_card = Card(text = text, in_deck = True)
                 new_card.save()
                 self.cards.add(new_card)
         return self.cards
@@ -109,9 +109,10 @@ class Deck(models.Model):
     def get_card_count(self, text):
         return self.cards.filter(text=text).count()
 
-    def draw_card(self, card):
+    def draw_card(self):
         if self.card_displayed:
             self.cards_in_discard.add(self.card_displayed)
+            self.card_displayed = None
         drawn_card = self.choose_random_card()
         if drawn_card:
             self.cards.remove(drawn_card)
@@ -122,16 +123,17 @@ class Deck(models.Model):
 
     def choose_random_card(self):
         if self.cards.count():
-            return random.choice(self.cards)
+            return random.choice(self.cards.all())
         else: return None
 
     def reset_deck(self):
         if self.card_displayed:
             self.cards.add(self.card_displayed)
-            card_displayed = None
-        for c in self.cards_in_discard:
-            cards.add(c)
-            cards_in_discard.remove(c)        
+            self.card_displayed = None
+        for c in self.cards_in_discard.all():
+            self.cards.add(c)
+        self.cards_in_discard.clear()
+        self.save()
         return self
 
 #TODO: move to external app
@@ -285,9 +287,8 @@ class GameRoom(models.Model):
         return self
 
     def reset_deck(self):
-        self.stop_play()
-        self.play_deck()
-        return self.deck
+        self.deck.reset_deck()
+        return self
 
     def close_room(self):
         self.stop_play()

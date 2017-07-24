@@ -101,6 +101,8 @@ class IsPlayer(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
+        if type(obj).__name__ == 'Card':
+            return True
         key = request.query_params.get('key', None)
         if key and request.user.is_anonymous():            
             return (key and key == obj.secret) and obj.allow_guests
@@ -109,16 +111,17 @@ class IsPlayer(permissions.BasePermission):
             return True
         elif request.user.is_anonymous():
             return False
-        return request.user == obj.date_created or request.user in obj.players.all()
+        return request.user == obj.user_created or request.user in obj.players.all()
 
 class CanDraw(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
+        if type(obj).__name__ == 'Card':
+            return True
         if request.user.is_anonymous():
-            print "sfdsafdsfd"
             key = request.query_params.get('key', None)
             return (key and key == obj.secret) and obj.allow_guests and obj.open_draw
-        return request.user == obj.date_created or (request.user in obj.players.all() and obj.open_draw)
+        return request.user == obj.user_created or (request.user in obj.players.all() and obj.open_draw)
     
 class DisableCSRF(object):
     def process_request(self, request):

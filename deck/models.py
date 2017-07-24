@@ -6,7 +6,11 @@ from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin, Base
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.utils import timezone
+from django.dispatch import receiver
 from datetime import timedelta, datetime
+import random, itertools
+from django.db.models.signals import pre_delete, post_save
+from django.db.models import signals
 
 colors = (
     ('blue', 'Blue (Default)'), ('red', 'Red'), ('pink', 'Pink'),
@@ -17,10 +21,14 @@ colors = (
     ('orange', 'Orange'), ('deep-orange', 'Deep Orange'),
     ('brown', 'Brown'), ('blue-grey', 'Blue-Grey'),
 )
+MAX_ALLOWED_CARDS = 500
+MAX_ALLOWED_DECKS = 5
+MAX_ALLOWED_ROOMS = 1
 
 # Create your models here.
 class Card(models.Model):
     text = models.CharField(max_length=255)
+    in_deck = models.BooleanField(default=False) # mark as true to not see these in general uses
     
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -51,10 +59,10 @@ class Deck(models.Model):
                                     related_name="discard_set",blank=True)
     card_displayed = models.ForeignKey(Card, blank=True, null=True)
     in_play = models.BooleanField(default=False)
-    parent = models.ForeignKey('self', blank=True, null=True)
     
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
+    user_created = models.ForeignKey('CustomUser', blank=True, null=True)
     
     slug = models.SlugField(unique=True,max_length=50,blank=True,null=True)
     
@@ -70,20 +78,63 @@ class Deck(models.Model):
     
                 # Truncate the original slug dynamically. Minus 1 for the hyphen.
                 self.slug = "%s-%d" % (slugify(self.name)[:50 - len(str(x)) - 1], x)
+        if self.pk and self.cards.count() > MAX_ALLOWED_CARDS:
+            for c in self.cards.all()[MAX_ALLOWED_CARDS:]:
+                self.cards.remove(c)
         super( Deck, self ).save( *args, **kw )
 
-    def add_card(self, Card):
-        pass
+    def add_card(self, card, count=1):
+        if self.cards.count()+count > MAX_ALLOWED_CARDS:
+            count = self.cards.count() - MAX_ALLOWED_CARDS
+        if count > 0:
+            for x in range(count):
+                new_card = Card(text = card.text, in_deck = True)
+                new_card.save()
+                self.cards.add(new_card)
+        return self.cards
 
-    def remove_card(self, Card):
-        pass
+    def remove_card(self, card):
+        self.cards.remove(card)
+        return self.cards
 
-    def draw_card(self, Card):
-        pass
+    def remove_card_by_pk(self, pk):
+        self.cards.remove(Card.objects.get(pk=pk))
+        return self.cards
+
+    def remove_cards(self, text):
+        for c in self.cards.filter(text=text):
+            self.cards.remove(c)
+        return self.cards
+
+    def get_card_count(self, text):
+        return self.cards.filter(text=text).count()
+
+    def draw_card(self, card):
+        if self.card_displayed:
+            self.cards_in_discard.add(self.card_displayed)
+        drawn_card = self.choose_random_card()
+        if drawn_card:
+            self.cards.remove(drawn_card)
+            self.card_displayed = drawn_card
+            self.save()
+            return self.card_displayed
+        else: return None
 
     def choose_random_card(self):
-        pass    
+        if self.cards.count():
+            return random.choice(self.cards)
+        else: return None
 
+    def reset_deck(self):
+        if self.card_displayed:
+            self.cards.add(self.card_displayed)
+            card_displayed = None
+        for c in self.cards_in_discard:
+            cards.add(c)
+            cards_in_discard.remove(c)        
+        return self
+
+#TODO: move to external app
 class CustomUserManager(BaseUserManager):
 
     def _create_user(self, username, password,
@@ -168,23 +219,30 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email])
         
     def save( self, *args, **kw ):
+        if self.pk and self.decks.count() > MAX_ALLOWED_DECKS:
+            for d in self.decks.all()[MAX_ALLOWED_DECKS:]:
+                self.cards.remove(d)
         super( CustomUser, self ).save( *args, **kw )
 
 class GameRoom(models.Model):
     name = models.CharField(max_length=255)
-    owner = models.ForeignKey(CustomUser)
     players = models.ManyToManyField(CustomUser,#users that are playing, passed the secret password
                                     help_text=_('Users allowed in game room'), #make sure to add owner
                                     related_name="player_set",blank=True)
-    deck = models.ForeignKey(Deck, related_name="deck_played")#temp deck being played
+    deck = models.ForeignKey(Deck, related_name="deck_played",blank=True,null=True)#temp deck being played
     deck_parent = models.ForeignKey(Deck, related_name="original_deck")#keep track of the deck
     open_draw = models.BooleanField(default=True,
                                     help_text=_('Allow anyone to draw a card'))
     secret = models.CharField(max_length=50,blank=True,null=True,
                                     help_text=_('Secret key to let someone in the room'))
+    allow_guests = models.BooleanField(default=True,
+                                    help_text=_('Allow anyone to play with the secret key without signing in'))
+    finished = models.BooleanField(default=False,
+                                    help_text=_('Mark for destruction'))
 
     date_edited = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
+    user_created = models.ForeignKey(CustomUser)
     
     slug = models.SlugField(unique=True,max_length=50,blank=True,null=True)
     
@@ -200,13 +258,44 @@ class GameRoom(models.Model):
     
                 # Truncate the original slug dynamically. Minus 1 for the hyphen.
                 self.slug = "%s-%d" % (slugify(self.name)[:50 - len(str(x)) - 1], x)
+        elif self.finished:
+            self.delete()
+            return 0
         super( GameRoom, self ).save( *args, **kw )
 
     def play_deck(self):
-        pass
+        #create a deep copy so furhter changes wont affect the temp deck
+        temp_deck = Deck(name = self.deck_parent.name, in_play=True,
+            user_created = self.user_created)
+        temp_deck.save()
+        temp_deck.cards.clear()
+        for c in self.deck_parent.cards.all():
+            new_card = Card(text=c.text, in_deck=True)
+            new_card.save()
+            temp_deck.cards.add(new_card)
+        self.deck = temp_deck
+        self.save()
+        return self.deck
 
-    def stop_play(self):
-        pass
+    def stop_play(self):#destroy the deck
+        old_deck_id = self.deck.pk
+        self.deck = None
+        self.save()
+        Deck.objects.get(pk = old_deck_id).delete()
+        return self
 
     def reset_deck(self):
-        pass
+        self.stop_play()
+        self.play_deck()
+        return self.deck
+
+    def close_room(self):
+        self.stop_play()
+        self.delete()
+        return 0
+
+#signals for object manipulation here
+@receiver(post_save, sender = GameRoom)
+def add_owner(instance, created, **kwargs):
+    if created:
+        instance.players.add(CustomUser.objects.get(pk = instance.user_created.pk))

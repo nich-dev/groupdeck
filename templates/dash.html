@@ -1,0 +1,84 @@
+{% load staticfiles %}
+
+<div id="content">
+<div class="section no-pad-bot">
+    <div class="container">
+      <div class="row bottom-border">
+      	  <span class="col thin small-title s12 m3">Dashboard</span>
+      	  <div class="col s12 m9">
+      	  		{% if user.plants_manager.all.count > 0 or user.global_manager %}
+ 	  			<a href="#!"  id="session-button" data-activates="dropdownc"
+       			class="btn waves-effect waves-light {{ theme }} lighten-1 theme right dropdown-button no-ajaxy">Create</a>
+       			<ul id="dropdownc" class="dropdown-content">
+				  <li><a class="{{ theme }}-text theme" href="/instrument/add/">Create Instrument</a></li>
+				  <li><a class="{{ theme }}-text no-ajaxy theme" href="/task/add/">Create Task</a></li>
+				</ul>
+       			{% endif %}
+ 	  			<button id="search-button"
+       			class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer">Search</button>
+       			<a href="/reports/export/" id="export-button"
+          		class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer">Export</a>
+       			{% if user.plants_manager.all.count > 0 or user.global_manager %}
+  	  		<a href="/reports/" id="report-button"
+          		class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer">Reports</a>
+   	  			{% endif %}	 
+           </div>
+      </div>
+    </div>
+  </div>
+
+
+<div class="container">
+	<div id="filter-block" class="container" style="display:none;">
+		{% include 'blocks/issue.filter.html' %}
+	</div>
+    <!--   Instruments Section   -->
+     <ul id="instrument-cards" class="collection with-header z-depth-1 text-inputs">
+        <li class="collection-header">
+        	<form action="/dashboard/" method="get">
+        		<div class="row" style="margin-bottom:0;">
+	        		<div class="input-field col s6">
+			          <select id="filter" class="squish" name="filter">
+			          		<option value="all"          {% if filter == 'all' %}           selected="selected"{% endif %}>All ({{ counts.0 }})</option>
+			          		<option value="pastdue"{% if filter == 'pastdue' %} selected="selected"{% endif %}>Past Due ({{ counts.1 }})</option>
+			          		<option value="issues"   {% if filter == '"issues"' %}  selected="selected"{% endif %}>Issues ({{ counts.2 }})</option>
+			          		<option value="tasks"    {% if filter == '"tasks"' %}     selected="selected"{% endif %}>Tasks ({{ counts.3 }})</option>
+			          </select>
+			          <label for="filter">Showing</label>
+			        </div>
+			         <div class="input-field col s4">
+			          <select id="ordering" class="squish" name="ordering">
+			          		<option value="-next_calibration"    {% if orderingoption == "-next_calibration" %}  selected="selected"{% endif %}>Date Due (Newest First)</option>
+			          		<option value="next_calibration"     {% if orderingoption == "next_calibration" %}   selected="selected"{% endif %}>Date Due (Oldest First)</option>
+			          		<option value="-name"  {% if orderingoption == "-name" %}selected="selected"{% endif %}>Tag Name (Desc)</option>
+			          		<option value="name"   {% if orderingoption == "name" %} selected="selected"{% endif %}>Tag Name (Asc)</option>
+			          		<option value="-location__name"  {% if orderingoption == "--location__name" %}selected="selected"{% endif %}>Location Name (Desc)</option>
+			          		<option value="location__name"   {% if orderingoption == "-location__name" %} selected="selected"{% endif %}>Location Name (Asc)</option>
+			          </select>
+			          <label for="filter">Ordering</label>
+			        </div>
+			        <div class="input-field col s2">
+			          	<button class="waves-effect waves-light {{ theme }} btn" type="submit">
+			          		<i class="material-icons">send</i>
+			          	</button>
+			        </div>
+		        </div>
+        	</form>
+    		
+		</li>
+		
+		{% for i in instruments %}
+			{% include 'blocks/issue.card.html' %}
+		{% endfor %}	
+		{% for i in tasks %}
+			{% include 'blocks/issue.card.html' %}
+		{% endfor %}	
+      </ul>
+</div>
+
+
+<!-- Modals -->
+<div id="render" data-theme="{{ theme }}"></div>
+	<div id="instrument-modal" class="modal modal-fixed-footer">
+	</div>
+</div>

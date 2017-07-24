@@ -1,0 +1,85 @@
+<div id="content" class="">
+     <div class="row container white">
+	     <div class="col s12 z-depth-1" style="padding:16px">
+			<form method="post" action="" id="task-form">
+				<div>
+				    <h3 class="{{ theme }}-text darken-3 theme thin2 center">{% if pagetitle %}{{ pagetitle }}{% else %}Task{% endif %}</h3>
+				    	<div class="row">
+					        {% csrf_token %}
+						    {% for field in form %}
+						    	{% if field.label == 'Description' %}
+						    	 	<div class="input-field col s12">
+								        {{ field }}{% if not field.is_hidden %}{{ field.label_tag }}{% endif %}
+								        {% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}
+								        {% if field.help_text %}
+								        <p class="help">{{ field.help_text|safe }}</p>
+								        {% endif %}
+							        </div>
+							    {% elif field.label == 'Category' %}
+						    	 	<div class="input-field col s12 l6">
+						    	 		<button data-target="cat-modal" class="btn waves-effect waves-light z-depth-1 btn-make-new modal-trigger {{ theme }}">New Category</button>
+								        {{ field }}{% if not field.is_hidden %}{{ field.label_tag }}{% endif %}
+								        {% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}
+								        {% if field.help_text %}
+								        <p class="help">{{ field.help_text|safe }}</p>
+								        {% endif %}
+							        </div>
+							    {% elif field.label == 'Users' %}
+						    	 	<div class="input-field col s12 l6">
+						    	 		<button data-activates="dropdowntp" class="btn waves-effect waves-light btn-make-new z-depth-1 dropdown-button no-ajaxy {{ theme }}">Choose by Plant</button>
+						    	 		<ul id="dropdowntp" class="dropdown-content">
+						    	 			{% for p in plants %}
+										  		<li><span class="{{ theme }}-text theme users-select" 
+										  		data-users="{% for u in p.employee_set.all %}{{ u.pk }},{% endfor %}">{{ p.name }}</span></li>
+										  	{% endfor %}
+										</ul>
+								        {{ field }}{% if not field.is_hidden %}{{ field.label_tag }}{% endif %}
+								        {% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}
+								        {% if field.help_text %}
+								        <p class="help">{{ field.help_text|safe }}</p>
+								        {% endif %}
+							        </div>
+						    	{% else %}
+							        <div class="input-field col s12 l6">
+								        {{ field }}{% if not field.is_hidden %}{{ field.label_tag }}{% endif %}
+							        {% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}
+							        {% if field.help_text %}
+							        <p class="help">{{ field.help_text|safe }}</p>
+							        {% endif %}
+							        </div>
+							    {% endif %}
+							{% endfor %}
+						</div>
+					<input class="col waves-effect waves-green {{ theme }} btn-large btn" type="submit" value="Save"  />
+				</div>
+			</form>
+		</div>
+	</div>
+	<div id="cat-modal" class="modal">
+		<button class="right modal-action modal-close btn-close"><i class="material-icons">cancel</i></button>
+		<form method="post" action="#" id="cat-form">
+			<div>
+			    <h4 class="white-text lighten-1 {{ theme }} center thin2">Create Task Category</h4>
+				        {% csrf_token %}
+					    {% for field in catform %}
+					    <div class="row">
+							<div class="input-field col s10 push-s1">						        
+						        {{ field }}{% if not field.is_hidden %}{{ field.label_tag }}{% endif %}
+						        {% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}
+						        {% if field.help_text %}
+						        <p class="help">{{ field.help_text|safe }}</p>
+						        {% endif %}
+						        </div>
+						    </div>				    
+						{% endfor %}
+				<div class="row">
+					<div class="col s10 push-s1">
+						<input class="col white-text lighten-1 waves-effect waves-green btn-flat {{ theme }}" type="submit" value="Create"  />
+					</div>
+					<div class="col s8 red-text text-darken-2 error-msg">
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

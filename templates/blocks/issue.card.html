@@ -1,0 +1,115 @@
+{% if i.location %}
+<li class="collection-item avatar instrument-row" id="instrument-issue-{{ i.pk }}" data-pk="{{ i.pk }}">
+	<div class="row squish">
+		{% if i.past_due %}
+			<i class="material-icons circle grabbable red tooltipped"
+			data-position="top" data-delay="50" data-tooltip="Past Due">alarm</i>
+		{% elif i.active_issue %}
+			<i class="material-icons circle grabbable orange tooltipped"
+			data-position="top" data-delay="50" data-tooltip="Active Issue">warning</i>
+		{% elif i.attention %}
+			<i class="material-icons circle grabbable blue darken-1 tooltipped"
+			data-position="top" data-delay="50" data-tooltip="Needs Attention">track_changes</i>
+		{% else %}
+			<i class="material-icons circle grabbable green darken-1">check_circle</i>
+		{% endif %}		
+		<div class="col s12">
+			<div class="row squish">
+				<div class="col s12 m7 inst-info">
+					<a href="/instrument/{{ i.slug }}/view/" class="small-title thin2 grey-text text-darken-4">{{ i.name }}</a>
+					<p {% if i.past_due %}class="red-text"{% endif %}>{{ i.location }} <br>
+					    {{ i.next_calibration }}
+					</p>
+					<div class="hover-action">
+						<a href="#" class="waves-effect waves-light btn-large {{ theme }} complete-btn">Complete<i class="material-icons right">note_add</i>
+						</a>
+					</div>
+				</div>
+				<div class="col s12 m5">
+					<button data-target="detail{{ i.pk }}-modal" class="right calib-action modal-trigger act-btn tooltipped"
+					data-position="top" data-delay="50" data-tooltip="More info"><i class="material-icons {{ theme }}-text text-darken-1">more_horiz</i></button>
+					<!-- <a href="#messages{{ i.pk }}-modal" class="right calib-action modal-trigger">
+						{% if i.messages.count > 0 %}
+							<div class="message-count">{{ i.messages.count }}</div>
+							<i class="material-icons {{ theme }}-text text-darken-1">message</i>
+						{% else %}
+							<i class="material-icons grey-text">message</i>
+						{% endif %}
+					</a>	-->
+					<button data-targer="calibration{{ i.pk }}-modal" class="right calib-action calib-pop act-btn tooltipped" data-pk="{{ i.pk }}"
+					data-position="top" data-delay="50" data-tooltip="Complete calibration">
+						<i class="material-icons {% if i.past_due %}red-text{% elif i.active_issue %}orange-text{% else %}{{ theme }}-text text-darken-1{% endif %}">note_add</i>
+					</button>
+					{% if user.global_manager or i.location.plant in user.plants_manager.all %}
+					<a href="/instrument/{{ i.slug }}/edit/" class="right calib-action tooltipped"
+					data-position="top" data-delay="50" data-tooltip="Edit instrument"><i class="material-icons grey-text text-lighten-1">settings</i></a>
+					{% endif %}						
+				</div>
+			</div>
+		</div>
+		<div id="calibration{{ i.pk }}-modal" class="modal bottom-sheet calib-modal modal-fixed-footer"></div>
+		<div id="messages{{ i.pk }}-modal" class="modal">
+			{% include 'blocks/messages.html' %}
+		</div>
+		<div id="detail{{ i.pk }}-modal" class="modal">
+			{% include 'blocks/instrumentdetails.html' %}
+		</div>
+	</div>
+	{% else %}
+<li class="collection-item avatar instrument-row" id="instrument-issue-t{{ i.pk }}" data-pk="{{ i.pk }}">
+	<div class="row squish">
+		<i class="material-icons circle indigo grabbable darken-1 tooltipped"
+		data-position="top" data-delay="50" data-tooltip="Task">build</i>		
+		<div class="col s12">
+			<div class="row squish">
+				<div class="col s12 m7 inst-info">
+					<span class="small-title thin2">{{ i.name }}</span>
+					<p>{% if i.description|length > 119 %}{{ i.description|slice:"120" }}...{% else %}{{ i.description }}{% endif %}<br>
+					    <b>{{ i.category.name }}</b>  Assigned: {{ i.date_created }}
+					</p>
+				</div>
+				<div class="col s12 m5">
+					<a href="#detail_t{{ i.pk }}-modal" class="right calib-action modal-trigger tooltipped"
+					data-position="top" data-delay="50" data-tooltip="More Info"><i class="material-icons {{ theme }}-text">more_horiz</i></a>
+					<!-- <a href="#messages_t{{ i.pk }}-modal" class="right calib-action modal-trigger">
+						{% if i.messages.count > 0 %}
+							<div class="message-count">{{ i.messages.count }}</div>
+							<i class="material-icons indigo-text">message</i>
+						{% else %}
+							<i class="material-icons grey-text">message</i>
+						{% endif %}
+					</a>	-->
+					<a href="#calibration_t{{ i.pk }}-modal" class="right calib-action modal-trigger tooltipped"
+					data-position="top" data-delay="50" data-tooltip="Complete task"><i class="material-icons indigo-text">done</i></a>	
+					{% if user.global_manager or i.manager == user %}
+					<a href="/task/{{ i.pk }}/edit/" class="right calib-action tooltipped"
+					data-position="top" data-delay="50" data-tooltip="Edit task"><i class="material-icons grey-text text-lighten-1">settings</i></a>
+					{% endif %}		
+				</div>
+			</div>
+		</div>
+		<div id="calibration_t{{ i.pk }}-modal" class="modal">
+			<div class="row modal-header" style="margin:0 auto;padding-top:10px;">
+				<div class="s12 center">
+					<p class="flow-text">Are you sure you want to mark <span class="{{ theme }}-text">{{ i.name }}</span> as done?</p>
+				</div>
+			</div>
+			<div class="row modal-content" style="margin:0 auto 0 auto;padding-top:10px;">
+				<div class="col s10 push-s1 flow-text task-buttons">{{ i.description }}</div>
+				<div class="col s10 push-s1 task-buttons">
+					<button class="btn right waves-effect waves-light {{ theme }} lighten-1 spacer task-done" data-pk="{{ i.pk }}">Yes</button>
+					<button class="btn left waves-effect waves-light 
+							{% if theme == 'pink' or theme == 'red' %}black{% else %}red{% endif %} 
+								lighten-1 modal-action modal-close">Cancel</button>	
+				</div>
+			</div>
+		</div>
+		<div id="messages_t{{ i.pk }}-modal" class="modal">
+			{% include 'blocks/messages.html' %}
+		</div>
+		<div id="detail_t{{ i.pk }}-modal" class="modal">
+			{% include 'blocks/taskdetails.html' %}
+		</div>
+	</div>
+	{% endif %}
+</li>

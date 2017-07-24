@@ -1,0 +1,32 @@
+{% load staticfiles %}
+
+<div id="content">
+<div class="section no-pad-bot">
+    <div class="container">
+      <div class="row bottom-border">
+      <span class="thin small-title left">Instruments</span>
+      {% if user.plants_manager.all.count > 0 %}
+          <a href="/instrument/add/" id="session-button"
+           class="btn waves-effect waves-light {{ theme }} lighten-1 theme right">Create Instrument</a>
+          {% endif %}
+      </div>
+    </div>
+  </div>
+
+
+<div class="container">
+    <!--   Instruments Section   -->
+    {% include 'blocks/issue.filter.html' %}
+     <ul id="instrument-cards" class="collection text-inputs">		
+		{% for i in instruments %}
+			{% include 'blocks/issue.card.html' %}
+		{% endfor %}	
+		{% for i in tasks %}
+			{% include 'blocks/issue.card.html' %}
+		{% endfor %}	
+      </ul>
+</div>
+
+
+<!-- Modals -->
+</div>

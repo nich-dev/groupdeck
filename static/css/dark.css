@@ -1,0 +1,60 @@
+body{
+	background-color:#404040;
+	color:#fcfcfc;
+}
+
+li.collection-item.row:nth-child(odd){
+	background-color: #5d5d5d;
+}
+
+li.collection-item.row:nth-child(even){
+	background-color: #717171;
+}
+
+.collection .collection-item.active {
+	background-color:#535353;
+	color:#fcfcfc;
+}
+
+.session {
+	background-color:#404040;
+	border-radius:10px;
+	-webkit-transition: all 400ms linear;
+    -moz-transition: all 400ms linear;
+    -o-transition: all 400ms linear;
+    -ms-transition: all 400ms linear;
+    transition: all 400ms linear;
+}  .session:hover,  .session:focus{
+		background-color:#5d5d5d;
+		border-radius:15px;
+	}
+
+.pagination li a {
+	color: #acacac;
+}
+
+.dropdown-content.select-dropdown {
+	background-color: #777;
+}   .dropdown-content li:hover,
+	.dropdown-content li.active,
+	.dropdown-content li.selected{
+		background-color: #999;
+	}
+	.dropdown-content li>a, .dropdown-content li>span{
+		color: #e0f2f1;
+	}
+.collapsible {
+	border: 1px solid #333;
+} .collection .collection-item{
+	border-bottom: 1px solid #333;
+}
+
+.spinner div {
+  background-color: #ececec;
+}
+
+.modal {
+	background-color:#303030;
+}  .modal .modal-footer {
+	background-color:#333;
+}

@@ -1,0 +1,38 @@
+<div id="content" class="white">
+	<div class="section no-pad-bot">
+    	<div class="container">
+    		<h4 class="thin center {{ theme }}-text">Calibration for "{{ c.instrument.name }}"</h4>
+			<h6 class="thin2 center bottom-border">
+			Started at {{ c.date_created }} Last edited at {{ c.date_edited }} by {{ c.user.username }}</h6>
+			<div class ="row calibration-inputs">
+				{% if c.points.count > 0 %}
+					{% for p in c.points.all %}
+						<div class="col s12 m6 input-field calibration-input bottom-border">
+							<b>Calibration Point {{ p.number }}: </b><span>{{ p.value }}</span>
+						</div>
+					{% endfor %}
+				{% endif %}
+			</div>
+			<div class="row text-inputs">
+				<div class="col s12 m6 input-field">
+					<b>Alarm Trigger Points: </b><span>{{ c.alarm_trigger_points }}</span>
+				</div>
+				<div class="col s12 m6 input-field">
+					<b>Comments: </b><span>{{ c.comments }}</span>
+				</div>
+				<div class="col s12 m6 input-field">
+					<b>Issues: </b><span>{{ c.issues }}</span>
+				</div>
+				<div class="col s6 input-field">
+					<input type="checkbox" id="completed" {% if c.completed == True %}checked="checked"{% endif %} disabled="disabled"/>
+			        <label for="completed">Calibration Completed (100% done, no issues)</label>
+				</div>
+				<div class="col s6 input-field">
+					<a class="btn waves-effect waves-light {{ theme }} no-ajaxy" href="/calibration/web/{{ c.instrument.pk }}/{{ c.pk }}/">Edit
+					    <i class="material-icons right">build</i>
+					  </a>
+				</div>
+			</div>
+    	</div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+<li class="collection-item avatar instrument-row" id="model-{{ m.pk }}" data-pk="{{ m.pk }}">
+	<div class="row squish">
+		<i class="material-icons circle grabbable {{ theme }} lighten-2">label</i>
+		<div class="col s12">
+			<div class="row squish">
+				<div class="col s12 inst-info">
+					<a href="/model/{{ m.slug }}/view/" class="small-title thin2 {{ theme }}-text text-darken-2">{{ m.model_number }}</a>
+					<p>
+						{{ m.manufacturer }}<br>
+						{{ m.type }}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</li>

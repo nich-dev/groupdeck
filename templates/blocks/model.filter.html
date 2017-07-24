@@ -1,0 +1,32 @@
+<div class="row z-depth-1 instrument-filter">
+	<form action="/search/model/" method="get">
+	  <div class="input-field col s12 m3">
+	    <select id="id_manufacturer" name="manufacturer">
+	      <option{% if not dataman %} selected{% endif %}>Any</option>
+	      {% for m in manufacturers %}
+	      <option value="{{ m.pk }}" {% if dataman == m.pk %}selected{% endif %}>{{ m.name }}</option>
+	      {% endfor %}
+	    </select>
+	    <label>Manufacturer Select</label>
+	  </div>
+	  <div class="input-field col s12 m2">
+	    <select id="id_type" name="type">
+	      <option{% if not datatype %} selected{% endif %}>Any</option>
+	      {% for t in types %}
+	      <option value="{{ t.pk }}" {% if datatype == t.pk %}selected{% endif %}>{{ t.name }}</option>
+	      {% endfor %}
+	    </select>
+	    <label>Type Select</label>
+	  </div>
+	  <div class="input-field col s12 m5">
+          <i class="material-icons prefix">search</i>
+          <input id="search_model" type="text" name="search" class="validate" {% if datasearch %}value="{{ datasearch }}"{% endif %}>
+          <label for="search_model">Search</label>
+        </div>
+        <div class="input-field col s3 m1">
+          	<button class="waves-effect waves-light {{ theme }} btn" type="submit">
+          		<i class="material-icons">send</i>
+          	</button>
+        </div>
+      </form>
+ </div>

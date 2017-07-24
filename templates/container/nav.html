@@ -1,0 +1,47 @@
+<div class="navbar-fixed">
+	<nav class="{{ theme }} z-depth-1" role="navigation">
+	  <div class="nav-wrapper container">
+	  <div class="spinner loading-bar">
+		  <div></div>
+		  <div></div>
+		  <div></div>
+		  <div></div>
+		</div>
+	    <a id="logo-container" href={% if user.is_authenticated %}"/home/"{% else %}"/"{% endif %} class="brand-logo">Calibration</a>
+	    <ul class="right hide-on-med-and-down">
+	      {% if user.is_authenticated %}
+	      <li><a class="dropdown-button" href="/dashboard/">Dashboard</a></li>
+	        {% if user.is_staff %}
+			<li><a class="waves-effect waves-light no-ajaxy" href="/admin/">Administration</a></li>
+			{% endif %}
+	      <li><a class="dropdown-button no-ajaxy" href="#!" data-activates="dropdownpb">{{ user.username }}<i class="material-icons right">settings</i></a></li>
+	      {% else %}
+	      <li><a class="dropdown-button modal-trigger" href="#login-modal">Login</a></li>
+		  {% endif %}
+	    </ul>
+	
+	    <ul id="nav-mobile" class="side-nav">
+	     {% if user.is_authenticated %}
+	     <li><a class="dropdown-button" href="/dashboard/">Dashboard</a></li>
+	        {% if user.is_staff %}
+			<li><a class="waves-effect waves-light no-ajaxy" href="/admin/">Administration</a></li>
+			{% endif %}
+	      <li><a class="dropdown-button no-ajaxy" href="#!" data-activates="dropdownp">{{ user.username }}<i class="material-icons right">settings</i></a></li>
+	      {% else %}
+	      <li><a class="dropdown-button modal-trigger" href="#login-modal">Login</a></li>
+		  {% endif %}
+	    </ul>
+	    {% if user.is_authenticated %}
+		    <!-- Dropdown Structure Profile nav -->
+			<ul id="dropdownp" class="dropdown-content">
+			  {% include 'container/nav.profile.drop.html' %}
+			</ul>
+			<!-- Dropdown Structure Profile Big -->
+			<ul id="dropdownpb" class="dropdown-content">
+			  {% include 'container/nav.profile.drop.html' %}
+			</ul>
+		{% endif %}
+	    <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+	  </div>
+	</nav>
+</div>

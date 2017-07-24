@@ -1,0 +1,29 @@
+<div id="content" class="">
+     <div class="row container white">
+	     <div class="col s12 z-depth-1" style="padding:16px">
+			{% include 'forms/instrument.html' %}
+		</div>
+	</div>
+	<!-- Modals -->
+	<div id="model-modal" class="modal">
+		<button class="right modal-action modal-close btn-close"><i class="material-icons">cancel</i></button>
+		{% include 'forms/instrumentmodel.html' %}
+	</div>
+	<div id="frequency-modal" class="modal">
+		<button class="right modal-action modal-close btn-close"><i class="material-icons">cancel</i></button>
+		{% include 'forms/calibrationfreq.html' %}
+	</div>
+	<div id="location-modal" class="modal">
+		<button class="right modal-action modal-close btn-close"><i class="material-icons">cancel</i></button>
+		{% include 'forms/location.html' %}
+		<div style="height:4em"></div>
+	</div>
+	<div id="type-modal" class="modal">
+		<button class="right modal-action modal-close btn-close"><i class="material-icons">cancel</i></button>
+		{% include 'forms/type.html' %}
+	</div>
+	<div id="manufacturer-modal" class="modal">
+		<button class="right modal-action modal-close btn-close"><i class="material-icons">cancel</i></button>
+		{% include 'forms/manufacturer.html' %}
+	</div>
+</div>

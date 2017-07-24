@@ -1,0 +1,58 @@
+{% load staticfiles %}
+
+<div id="content">
+{% if password %}
+<div class="header">
+<div class="session-head row {{ theme }} lighten-2 theme">
+	<div class="container">
+	  <div class="col s8 m10">
+	  	<div class="row">
+	  		<h5 class="white-text light" style="margin-bottom:0">Nothing here</h5>
+	  	</div>
+	  </div>
+  </div>
+</div>
+</div>
+{% else %}
+    <div class="header">
+    {% if user == s.0.user %}
+		{% include 'blocks/session_header.html' %}
+	{% else %}
+		{% include 'blocks/session_header.html' %}
+	{% endif %}
+	
+    </div>
+	
+	<div class="container" id="sess" data-pk="{{ s.0.pk }}">
+		<div class="row requests-header">
+			<div class="col s5 l8 light {{ theme }}-text lighten-1 center"><br></div>
+			{% include 'blocks/session_filters.html' %}
+		</div>
+	
+		<ul class="collection collapsible" id="req-list">
+
+			{% include 'blocks/song_request.temp.html' %}
+	   </ul>
+	   
+	   <div class="row center">
+			{% include 'blocks/pagination.html' %}
+		</div>
+	</div>
+	
+	<!-- FAB -->
+	<div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+	    <a class="modal-trigger btn-floating btn-large red" href="#request-modal" >
+	      <i class="large material-icons">add</i>
+	    </a>
+	</div>
+	
+	<!-- Modals -->
+	<div id="render" data-theme="{{ theme }}" data-own="{{ is_owner }}"></div>
+	<div id="request-modal" class="modal modal-fixed-footer">
+		{% include 'forms/songrequest.html' %}
+	</div>
+	<div id="session-modal" class="modal modal-fixed-footer">
+		{% include 'forms/session.html' %}
+	</div>
+{% endif %}
+</div>

@@ -1,0 +1,77 @@
+{% load staticfiles %}
+
+<div id="content">
+<div class="section no-pad-bot">
+    <div class="container">
+      <div class="row bottom-border">
+      	  <span class="col thin small-title s12 m3">Reports</span>
+      	  <div class="col s12 m9">
+			<a href="/reports/export/" id="export-button"
+          		class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer">Export Instruments</a>
+           </div>
+      </div>
+    </div>
+  </div>
+
+
+<div class="container">
+	<ul class="collection with-header z-depth-1">
+		<li class="collection-header">
+			<div class="row squish">
+				<form action="/reports/" method="get">
+					<div class="input-field col s12 m3 squish">
+			          <select id="date_plant" class="squish" name="plant">
+			          	{% for p in plants %}
+			          		<option value="{{ p.pk }}"{% if p.pk == dataplant.pk %} selected="selected"{% endif %}>{{ p.name }}</option>
+			          	{% endfor %}
+			          </select>
+			        </div>
+					<div class="input-field col s12 m2 squish">
+			          <input id="date_report" type="text" class="squish" name="date" {% if datadate %}value="{{ datadate }}"{% endif %}>
+			          <label for="date_report">Start Date</label>
+			        </div>
+			        <div class="input-field col s12 m2 squish">
+			          <input id="date_report2" type="text" class="squish" name="date2" {% if datadate2 %}value="{{ datadate2 }}"{% endif %}>
+			          <label for="date_report">End Date</label>
+			        </div>
+			        <div class="input-field col s12 m2 squish">
+			          <select id="ordering" class="squish" name="ordering">
+			          		<option value="-date_completed"    {% if orderingoption == "-date_completed" %}  selected="selected"{% endif %}>Date (Desc)</option>
+			          		<option value="date_completed"     {% if orderingoption == "date_completed" %}   selected="selected"{% endif %}>Date (Asc)</option>
+			          		<option value="-instrument__name"  {% if orderingoption == "-instrument__name" %}selected="selected"{% endif %}>Tag (Desc)</option>
+			          		<option value="instrument__name"   {% if orderingoption == "instrument__name" %} selected="selected"{% endif %}>Tag (Asc)</option>
+			          </select>
+			        </div>
+			        <div class="input-field col s3 m1">
+			          	<button class="waves-effect waves-light {{ theme }} btn" type="submit">
+			          		<i class="material-icons">send</i>
+			          	</button>
+			        </div>
+		        </form>
+			</div>
+		</li>
+
+        <li class="collection-header">
+		{% if report %}
+			<div class="col s12 m6">
+				<a href="/reports/{% if dataplant %}?plant={{ dataplant.pk }}{% endif %}" id="report-button"
+	       		class="btn waves-effect waves-light {{ theme }} lighten-1 theme{% if datacurrent %} disabled{% endif %}">Current</a>
+				<a id="report-last-button" href="/reports/?date=last{% if dataplant %}&plant={{ dataplant.pk }}{% endif %}"
+	    		class="btn waves-effect waves-light {{ theme }} lighten-1 theme{% if datalast %} disabled{% endif %}">Last Week</a> 			
+			</div>
+		{% endif %}
+		</li>
+		<li>
+			{% if report %}
+				{% include 'blocks/report.html' %}
+			{% endif %}
+		</li>
+      </ul>
+</div>
+
+
+<!-- Modals -->
+<div id="render" data-theme="{{ theme }}"></div>
+	<div id="instrument-modal" class="modal modal-fixed-footer">
+	</div>
+</div>

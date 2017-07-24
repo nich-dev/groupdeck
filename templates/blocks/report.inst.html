@@ -1,0 +1,143 @@
+<div class="container print-sheet z-depth-1">
+<div class="row">
+	<div class="col s12 m6 offset-m3">
+		<div class="row bottom-border {{ theme}}-text text-darken-2 print-title center">Instrument Tag Name</div>
+		<div class="row center"><h5 class="thin2 print-name">{{ c.instrument_snapshot.name }}</h5></div>
+	</div>
+</div>
+<div class="row">
+	<div class="col s12 m6 print-border-1">
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Measurement</div>
+				<div class="row print-details">{{ c.instrument_snapshot.type }}</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Location</div>
+				<div class="row print-details">{{ c.instrument_snapshot.location }}</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Input/Output Characteristics</div>
+				<div class="row print-details">{{ c.instrument_snapshot.input_output_characteristics }}</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Calibrated Span/Setpoint</div>
+				<div class="row print-details">{{ c.instrument_snapshot.calibrated_span }}</div>
+			</div>
+		</div>
+		<div class="row hidden-info">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Zero Offset</div>
+				<div class="row print-details">{{ c.instrument_snapshot.zero_offset }}</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Alarm Trigger Points</div>
+				<div class="row print-details">{{ c.alarm_trigger_points }}</div>
+			</div>
+		</div>
+	</div>
+	<div class="col s12 m6 print-border-2">
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Manufacturer</div>
+				<div class="row print-details">{{ c.instrument_snapshot.manufacturer }}</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Model Number</div>
+				<div class="row print-details">{{ c.instrument_snapshot.model }}</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Serial Number(s)</div>
+				<div class="row print-details">{{ c.instrument_snapshot.serials }}</div>
+			</div>
+		</div>
+		<div class="row hidden-info">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Part Number</div>
+				<div class="row print-details">{{ c.instrument_snapshot.part_num }}</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Interconnected Device</div>
+				<div class="row print-details">{{ c.instrument_snapshot.interconnected_device }}</div>
+			</div>
+		</div>
+		<div class="row hidden-info">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Process</div>
+				<div class="row print-details">{{ c.instrument_snapshot.process }}</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Calibration Points</div>
+				{% for p in c.points.all %}
+				<div class="row">{{ p }}</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col s12 print-border-3">
+		<div class="row">
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Comments</div>
+				<div class="row print-details">{{ c.comments }}</div>
+			</div>
+			<div class="col s12">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Issues</div>
+				<div class="row print-details">{{ c.issues }}</div>
+			</div>
+			<div class="col s12 hidden-info">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Instrument Description</div>
+				<div class="row print-details">{{ c.instrument_snapshot.description }}</div>
+			</div>
+			<div class="col s12 hidden-info">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Instrument Comments</div>
+				<div class="row print-details">{{ c.instrument_snapshot.comments }}</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col s12 print-border-4">
+		<div class="row">
+			<div class="col s6 m3">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Completed by</div>
+				<div class="row print-details">{{ c.user }}</div>
+			</div>
+			<div class="col s6 m3">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Completed</div>
+				<div class="row print-details">{{ c.date_completed|date:'M. d, Y' }}</div>
+			</div>
+			<div class="col s6 m3">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Next Date</div>
+				<div class="row print-details">{{ c.instrument_snapshot.next_calibration }}</div>
+			</div>
+			<div class="col s6 m3">
+				<div class="row bottom-border {{ theme}}-text text-darken-2 print-title">Frequency</div>
+				<div class="row print-details">{{ c.calibration_frequency.name }}</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- <div class="row copyright">
+	<div class="col s12 center">
+		<span class="thin2">&copy; CITI, LLC {% now "Y" %}</span>
+	</div>
+</div> -->
+</div>

@@ -1,0 +1,20 @@
+<div class="row {{ theme }} darken-2" style="margin:0 auto;padding-top:10px;">
+	<div class="s12 center">
+		<h4 class="thin white-text">Messages for {{ i.name }}</h4>
+	</div>
+</div>
+<div class="row" style="margin:0 auto">
+	<p> edit this to be a new view. GET with an ajax call and render.  Will reverse_set the messages from the instrument. </p>
+	<div class="col s12 m10 push-m1">
+		<ul class="collection">
+			{% for m in i.messages.all %}
+		    <li class="collection-item avatar">
+		      <i class="material-icons circle">settings_voice</i>
+		      <span class="title">{{ m.user.username }}</span>
+		      <p>{{ m.text }}
+		      </p>
+		    </li>
+		    {% endfor %}
+		  </ul>
+	</div>
+</div>

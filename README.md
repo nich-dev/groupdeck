@@ -67,9 +67,9 @@ Returns a list of cards like so
 * If not owner readonly is applied
 
 ##### Queries 
-> ?since="%Y-%m-%d %H:%M:%S", check date_edited. Default not applied.
-> ?search=[text], searchs card text. Default not applied.
-> ?own=[true/false], check if requesting user created the card. Default True.
+* ?since="%Y-%m-%d %H:%M:%S", check date_edited. Default not applied.
+* ?search=[text], searchs card text. Default not applied.
+* ?own=[true/false], check if requesting user created the card. Default True.
 
 ### Actions
 
@@ -164,10 +164,10 @@ returns a list of decks like so
 * If not owner readonly is applied
 
 ##### Queries 
-> ?since="%Y-%m-%d %H:%M:%S", check date_edited. Default not applied.
-> ?search=[text], searchs deck names. Default not applied.
-> ?own=[true/false], check if requesting user created the deck. Default True.
-> ?in_play=[true/false], check if deck is being played. Default False. Only works for staff users.
+* ?since="%Y-%m-%d %H:%M:%S", check date_edited. Default not applied.
+* ?search=[text], searchs deck names. Default not applied.
+* ?own=[true/false], check if requesting user created the deck. Default True.
+* ?in_play=[true/false], check if deck is being played. Default False. Only works for staff users.
 
 ### Actions
 
@@ -335,9 +335,9 @@ Returns a list of game rooms like so
 * If not owner readonly is applied
 
 ##### Queries 
-> ?since="%Y-%m-%d %H:%M:%S", check date_edited. Default not applied.
-> ?key=[text], key to the room. If user is authenticated and the key matches, they are added as a player to the room. If the user is anon, then access is checked against the allow_guests field of the room.
-> ?own=[true/false], check if requesting user created the card. Default True.
+* ?since="%Y-%m-%d %H:%M:%S", check date_edited. Default not applied.
+* ?key=[text], key to the room. If user is authenticated and the key matches, they are added as a player to the room. If the user is anon, then access is checked against the allow_guests field of the room.
+* ?own=[true/false], check if requesting user created the card. Default True.
 
 ### Actions
 

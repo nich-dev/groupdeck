@@ -7,12 +7,6 @@ from django.views.generic import (TemplateView, FormView, RedirectView,
                                   UpdateView, CreateView)
 
 # Create your views here.
-def get_theme(request):
-    if not request.user.is_anonymous():
-        return request.user.theme
-    else:
-        return "blue"
-
 class Landing(TemplateView):
     def get_template_names(self):
         if self.request.is_ajax():
@@ -23,5 +17,4 @@ class Landing(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(Landing, self).get_context_data(**kwargs)
         context['form'] = AuthenticationForm
-        context['theme'] = get_theme(self.request)
         return context

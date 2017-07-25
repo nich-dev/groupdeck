@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'searchableselect',
+    'authentication',
     'deck',
     'rest_auth',
 ]
@@ -45,7 +46,10 @@ MIDDLEWARE_CLASSES = [
 
 ROOT_URLCONF = 'django_project.urls'
 
-AUTH_USER_MODEL = 'deck.CustomUser'
+AUTH_USER_MODEL = 'authentication.CustomUser'
+MAX_ALLOWED_CARDS = 500
+MAX_ALLOWED_DECKS = 5
+MAX_ALLOWED_ROOMS = 1
 
 TEMPLATES = [
     {

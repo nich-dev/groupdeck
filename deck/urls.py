@@ -6,7 +6,6 @@ router = routers.DefaultRouter()
 router.register(r'cards', api.CardViewSet)
 router.register(r'decks', api.DeckViewSet)
 router.register(r'rooms', api.GameRoomViewSet)
-router.register(r'users', api.UserViewSet)
 
 urlpatterns = [
    url(r'^$', views.Landing.as_view()),

@@ -13,32 +13,68 @@ import permissions as deckpermissions
 def str2bool(v):
     return str(v).lower() in ("yes", "true", "t", "1")
 
-class UserViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.UserSimpleSerializer
-    queryset = models.CustomUser.objects.all()
-    lookup_field = ('username')
-    permission_classes = (permissions.IsAuthenticated,
-        deckpermissions.IsUserOrAdmin)
-
 class CardViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CardSerializer
     queryset = models.Card.objects.filter(in_deck=False)
     lookup_field = ('pk')
     permission_classes = (permissions.IsAuthenticated,
-        deckpermissions.ReadOnlyOrCreate)
+        deckpermissions.IsOwnerOrReadOnly)
     
     def get_queryset(self):
         since = self.request.query_params.get('since', None)
         search = self.request.query_params.get('search', None)
+        own = str2bool(self.request.query_params.get('own', True))
         queryset = models.Card.objects.filter(in_deck=False)
 
+        if own:
+            queryset = models.Card.objects.filter(in_deck=False, user_created = self.request.user)
         if since is not None:
             last_time = datetime.strptime(since, '%Y-%m-%d %H:%M:%S')
             queryset = queryset.filter(date_edited__gte=last_time)
         if search is not None:
-            queryset = queryset.filter(text__icontains = search)
+            queryset = queryset.filter(text__icontains = search).order('text').distinct()
             
         return queryset
+
+    # copies a card, sets the user as the requesting user. Allows for a collection of 'saved' cards
+    @detail_route()
+    def copy(self, request, pk=None):
+        try:
+            obj = self.get_object()
+            self.check_object_permissions(request, obj)
+            c = models.Card(text = obj.text, flavor_text = obj.flavor_text, 
+                user_created = request.user)
+            c.save()
+            serializer = serializers.CardSerializer(c, many=False)
+            return Response(serializer.data,
+                status=status.HTTP_200_OK)
+        except Exception, e:
+            print e
+            return Response({'status': 'Error copying card'},
+                status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        serializer = serializers.CardCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            card = serializer.save()
+            card.user_created = request.user
+            card.save()
+            return Response(serializers.CardSerializer(card, many=False).data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk=None):
+        obj = self.get_object()
+        serializer = serializers.CardCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            obj.text = serializer.data['text']
+            obj.flavor_text = serializer.data['flavor_text']
+            obj.save()
+            return Response(serializers.CardSerializer(obj, many=False).data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 class DeckViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.DeckSimpleSerializer
@@ -49,20 +85,20 @@ class DeckViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         since = self.request.query_params.get('since', None)
-        queryset = models.Deck.objects.filter(in_play=False)
         search = self.request.query_params.get('search', None)
         in_play = self.request.query_params.get('in_play', None)
-        owned = self.request.query_params.get('owned', None)
+        own = str2bool(self.request.query_params.get('own', True))
+        queryset = models.Deck.objects.all()
         
         if in_play is not None and self.request.user.is_staff:
             queryset = models.Deck.objects.filter(in_play=in_play)
+        if own:
+            queryset = queryset.filter(user_created = self.request.user)
         if since is not None:
             last_time = datetime.strptime(since, '%Y-%m-%d %H:%M:%S')
             queryset = queryset.filter(date_edited__gte=last_time)
         if search is not None:
             queryset = queryset.filter(name__icontains = search)
-        if owned is not None:
-            queryset = queryset.filter(user_created = self.request.user)
             
         return queryset
 
@@ -79,30 +115,68 @@ class DeckViewSet(viewsets.ModelViewSet):
             return Response({'status': 'Error grabbing card'},
                 status=status.HTTP_400_BAD_REQUEST)
 
-    #accepts a POST with a list of text and count fields
-    #ex [{"text": "Example card 1", "count": 2}, {"text": "Example card 2", "count": 1}]
+    @detail_route()
+    def play_view(self, request, slug=None):
+        obj = self.get_object()
+        self.check_object_permissions(request, obj)
+        serializer = serializers.DeckInPlaySerializer(obj, many=False)
+        return Response(serializer.data,
+            status=status.HTTP_200_OK)
+
+    #accepts a POST with a list cards and count fields
+    #ex [{"card": {"text":"", "flavor_text":"", "pk":0}, "count": 2} ...]
+    #if pk is invalid (-1,0), will preform a create. If you know pk, do not need to transmit text/flavor_text
     @detail_route(methods=['POST'])
     def add_cards(self, request, slug=None):
         obj = self.get_object()
-        serializer = serializers.AddCardSerializer(data=request.data, many=True)
+        serializer = serializers.AddCardToDeckSerializer(data=request.data, many=True)
         if serializer.is_valid():
-            for c in serializer.data:
-                obj.add_card(c['text'], c['count'])
+            for d in serializer.data:
+                try: #try to find card and add
+                    c = models.Card.objects.get(pk=d['card'])
+                    if c.user_created is not request.user:
+                        c = models.Card(text = c.text, flavor_text = c.flavor_text, user_created = request.user)
+                        c.save()
+                    obj.add_card(c, d['count'])
+                except: 
+                    c = Card(text=d['text'], flavor_text=d['flavor_text'], user_created=request.user)
+                    c.save()
+                    obj.add_card(c, d['count'], True)
             return Response(serializers.DeckSimpleSerializer(obj, many=False).data)
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
-    #accepts a POST with a list of text to delete, this will delete all cards with this text
-    #ex {"texts": ["Example text 1", "Example text 2"]}
+    #accepts a POST with a list cardpks and count fields to update the counts
+    #ex [{"card": 1, "count": 2} ...]. If count < 1, card will be deleted
+    @detail_route(methods=['POST'])
+    def change_count(self, request, slug=None):
+        obj = self.get_object()
+        serializer = serializers.ChangeCardCountSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            for d in serializer.data:
+                try: #try to find card and change count
+                    c = models.Card.objects.get(pk=d['card'])
+                    obj.change_count(c, d['count'])
+                except: pass
+            return Response(serializers.DeckSimpleSerializer(obj, many=False).data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    #accepts a POST with a list of text/pk to delete, this will delete all cards with this text/pk
+    #ex {"texts": ["Example text 1", "Example text 2"], "cards": [1,2,4]}
     @detail_route(methods=['POST'])
     def remove_cards(self, request, slug=None):
         obj = self.get_object()
-        serializer = serializers.DeleteCardSerializer(data=request.data, many=False)
+        serializer = serializers.DeleteCardsInDeckSerializer(data=request.data, many=False)
         if serializer.is_valid():
-            print serializer.data
-            for c in serializer.data['texts']:
-                obj.remove_cards(c)
+            try: #try to remove all cards with text
+                obj.remove_cards_by_text(serializer.data['texts'])
+            except: pass
+            try: #try to remove all cards with text
+                obj.remove_cards_by_pk(serializer.data['cards'])
+            except: pass
             return Response(serializers.DeckSimpleSerializer(obj, many=False).data)
         else:
             return Response(serializer.errors,
@@ -123,8 +197,11 @@ class GameRoomViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         since = self.request.query_params.get('since', None)
+        own = str2bool(self.request.query_params.get('own', True))
         queryset = models.GameRoom.objects.all()
-        
+
+        if own:
+            queryset = queryset.filter(user_created = self.request.user)        
         if since is not None:
             last_time = datetime.strptime(since, '%Y-%m-%d %H:%M:%S')
             queryset = queryset.filter(date_edited__gte=last_time)
@@ -159,11 +236,19 @@ class GameRoomViewSet(viewsets.ModelViewSet):
             return Response({'status': 'Deck is empty'},
                 status=status.HTTP_200_OK)
 
+    @detail_route(permission_classes=[deckpermissions.IsPlayer])
+    def get_deck(self, request, slug=None):
+        obj = self.get_object()
+        self.check_object_permissions(request, obj)
+        serializer = serializers.DeckInPlaySerializer(obj.deck, many=False)
+        return Response(serializer.data,
+            status=status.HTTP_200_OK)
+
     @detail_route(permission_classes=[deckpermissions.IsOwner])
     def start_game(self, request, slug=None):
         obj = self.get_object()
         self.check_object_permissions(request, obj)
-        serializer = serializers.DeckSerializer(obj.play_deck(), many=False)
+        serializer = serializers.DeckInPlaySerializer(obj.play_deck(), many=False)
         return Response(serializer.data,
             status=status.HTTP_200_OK)
 
@@ -187,7 +272,15 @@ class GameRoomViewSet(viewsets.ModelViewSet):
     def reset_deck(self, request, slug=None):
         obj = self.get_object()
         self.check_object_permissions(request, obj)
-        serializer = serializers.GameRoomSerializer(obj.reset_deck(), many=False)
+        serializer = serializers.DeckInPlaySerializer(obj.reset_deck(), many=False)
+        return Response(serializer.data,
+            status=status.HTTP_200_OK)
+
+    @detail_route()
+    def play_view(self, request, slug=None):
+        obj = self.get_object()
+        self.check_object_permissions(request, obj)
+        serializer = serializers.DeckInPlaySerializer(obj.deck, many=False)
         return Response(serializer.data,
             status=status.HTTP_200_OK)
 

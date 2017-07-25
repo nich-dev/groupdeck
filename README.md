@@ -8,20 +8,22 @@ Sometimes you want to draw a card from a deck in a group of people online. This 
 * djangorestframwork
 * django-searchable-select
 
-> django-rest-auth is required right now as the user object is in the app. This will be removed.
-
-## Major bugs/TODOs/Road Maps :camel:
-
-* Remove the User object from this app
-* Do CREATE and UPDATE statements on objects
-* Further refine and expand the Card object
-* Build views
-
 # API
 
-The api is found at [host]/deck/v2/[object]/
+The api is found at [host api path]/v2/[object]/ in the example.
 
-> Creates and Updates are all broken at the moment, objects must be built through the admin panel
+##### Import into your project with with ease
+```python
+from django.conf.urls import include, url
+#...
+from deck import urls as deck_urls
+
+urlpatterns = [
+   # Rename "deck" with your desired location
+   url(r'^deck/', include(deck_urls)),
+   #...
+]
+```
 
 ## Card object /cards/ lookup field 'pk'
 
@@ -29,46 +31,85 @@ Returns a list of cards like so
 
 ```json
 {
-    "count": 1,
+    "count": 2,
     "next": null,
     "previous": null,
     "results": [
         {
             "text": "Foo",
+            "flavor_text": "Bar",
             "slug": "foo",
             "pk": 1,
-            "date_edited": "2017-07-24T22:20:37.029488Z",
-            "date_created": "2017-07-24T22:20:37.029583Z"
+            "user_created": 1,
+            "date_edited": "2017-07-25T14:09:01.227000",
+            "date_created": "2017-07-25T14:09:01.227000"
         }
     ]
 }
 ```
 
-> use /cards/[pk]/ to return a specific card. 
-
-> Permissions: must be authenticated
-
-> Queries: ?since="%Y-%m-%d %H:%M:%S", check date_edited. ?search=[text], searchs card text.
-
-## Deck object /decks/ lookup field 'slug'
-
-returns a list of cards like so
+#### Use /cards/[pk]/ to return a specific card. 
 
 ```json
 {
-    "count": 1,
+    "text": "Xen",
+    "flavor_text": "Hello world!",
+    "slug": "xen",
+    "pk": 2,
+    "user_created": 1,
+    "date_edited": "2017-07-25T14:11:49.311000",
+    "date_created": "2017-07-25T14:11:49.311000"
+}
+```
+
+##### Permissions
+* Must be authenticated
+* If not owner readonly is applied
+
+##### Queries 
+> ?since="%Y-%m-%d %H:%M:%S", check date_edited. Default not applied.
+> ?search=[text], searchs card text. Default not applied.
+> ?own=[true/false], check if requesting user created the card. Default True.
+
+### Actions
+
+#### Create Card
+> 'POST' on /cards/ returns the created card
+
+Looks for an object with 'text' and 'flavor_text' strings.
+
+#### Delete Card
+> 'DELETE' on /cards/[pk]
+
+#### Update Card
+> 'PUT' on /cards/[pk]/ returns the updated card
+
+Looks for an object with 'text' and 'flavor_text' strings.
+
+#### Copy Card
+> 'GET' on /cards/[pk]/copy/ returns the copied card
+
+This copies a card and sets the new cards 'user' as the request's user. Used to 'store' or 'favorite' cards.
+Copying is preferred so card text will not change suprisingly on a user.
+
+## Deck object /decks/ lookup field 'slug'
+
+returns a list of decks like so
+
+```json
+{
+    "count": 2,
     "next": null,
     "previous": null,
     "results": [
         {
-            "name": "Test Deck A",
-            "slug": "test-deck-a",
+            "name": "Deck A",
+            "slug": "deck-a",
             "cards": [
                 1,
-                2,
-                3,
-                4
+                2
             ],
+            "cards_in_deck": [],
             "cards_in_discard": [],
             "card_displayed": null,
             "in_play": false,
@@ -78,39 +119,141 @@ returns a list of cards like so
 }
 ```
 
-> use /decks/[slug] to return a specific deck, this will use an expanded serializer, where cards are expanded into 'text' and 'pk' objects
-
-> Permissions: Must be authenticated, If not owner of deck it will be read-only. Applies to actions. 
-
-> Queries: ?since="%Y-%m-%d %H:%M:%S", check date_edited. ?in_play=[true/false], checks if in_play. Must be staff user. ?search=[text], searchs deck names. ?owned=[true/false], checks if user is owner.
-
-### Actions
-
-#### Add Cards /decks/[slug]/add_cards/
-
-Adds cards using a POST with list of text and count of cards
+#### Use /decks/[slug] to return a specific deck
+> This will use an expanded serializer, where cards (Cards In Deck object type) are expanded into 'card' and 'count' objects
+> Note: 'cards' and 'cards_indeck/discard' are different object types.
 
 ```json
-[
-{"text": "Example card 1", "count": 2}, 
-{"text": "Example card 2", "count": 1}
-]
-```
-#### Remove Cards /decks/[slug]/remove_cards/
-
-Removes cards using a POST with on field "texts", which is a list of texts you want removed
-> This will remove all cards with this name in the deck
-
-```json
-{"texts": [
-    "Example text 1", 
-    "Example text 2"]
+{
+    "name": "Deck B",
+    "slug": "deck-b",
+    "pk": 2,
+    "cards_in_deck": [],
+    "card_count": {
+        "count__sum": 3
+    },
+    "cards": [
+        {
+            "card": {
+                "text": "Foo",
+                "flavor_text": "Bar",
+                "pk": 1
+            },
+            "count": 2
+        },
+        {
+            "card": {
+                "text": "Xen",
+                "flavor_text": "Hello world!",
+                "pk": 2
+            },
+            "count": 1
+        }
+    ],
+    "cards_in_discard": [],
+    "card_displayed": null,
+    "in_play": false,
+    "date_edited": "2017-07-25T14:12:27.128000",
+    "date_created": "2017-07-25T14:12:27.128000",
+    "user_created": 1
 }
 ```
 
-### Get a random card /decks/[slug]/get_random_card/
+##### Permissions
+* Must be authenticated
+* If not owner readonly is applied
+
+##### Queries 
+> ?since="%Y-%m-%d %H:%M:%S", check date_edited. Default not applied.
+> ?search=[text], searchs deck names. Default not applied.
+> ?own=[true/false], check if requesting user created the deck. Default True.
+> ?in_play=[true/false], check if deck is being played. Default False. Only works for staff users.
+
+### Actions
+
+#### Add Cards
+> 'POST' on /decks/[slug]/add_cards/ returns the deck in simple format.
+
+Looks for a list of Card In Deck objects like so
+```json
+[
+    { "card": {
+        "text":"", 
+        "flavor_text":"", 
+        "pk":0
+      }, 
+      "count": 2
+    } ...
+]
+```
+
+If pk is invalid (send a -1 or a 0), this will preform a create on those cards. 
+If you know pk, do not need to transmit text or flavor_text, just the pk.
+
+#### Remove Cards 
+> 'POST' on /decks/[slug]/remove_cards/ returns the deck in simple format.
+
+Looks for a list of texts and cards, where it will delete all cards in the deck that match texts or pks
+```json
+{
+	"texts": [
+	    "Example text 1", 
+	    "Example text 2"
+	    ], 
+	"cards": [1,2,4]
+}
+```
+
+#### Change Card Count
+> 'POST' on /decks/[slug]/change_count/ returns the deck in simple format.
+
+Looks for a list of Card In Deck simple objects like so
+```json
+[
+    { "card": 3, 
+      "count": 2
+    } ...
+]
+```
+
+This ignore invalid card pks. If a count is < 1, the card will be totally removed from the deck.
+
+#### Get a random card
+> 'GET' on /decks/[slug]/get_random_card/
 
 Gives a random card from the deck without altering anything
+
+#### Play View
+> 'GET' on /decks/[slug]/play_view/
+
+Returns the deck in a semi-compressed view of only detail relevant for play.
+```json
+{
+    "name": "Deck B",
+    "slug": "deck-b",
+    "cards_in_deck": [
+        {
+            "text": "Foo",
+            "flavor_text": "Bar",
+            "pk": 15
+        }
+    ],
+    "cards_in_discard": [
+        {
+            "text": "Xen",
+            "flavor_text": "Hello world!",
+            "pk": 17
+        }
+    ],
+    "card_displayed": {
+        "text": "Foo",
+        "flavor_text": "Bar",
+        "pk": 16
+    },
+    "in_play": true,
+    "user_created": 1
+}
+```
 
 ## Game Room object /rooms/ lookup field 'slug'
 
@@ -123,62 +266,127 @@ Returns a list of game rooms like so
     "previous": null,
     "results": [
         {
-            "name": "Test Game Room 1",
-            "slug": "test-game-room-1",
+            "name": "Game Room Alpha",
+            "slug": "game-room-alpha",
             "user_created": 1,
             "players": [
                 1
             ],
-            "deck": null,
-            "deck_parent": 1,
+            "deck": 2,
             "open_draw": true
         }
     ]
 }
 ```
 
-> use /rooms/[slug]/ to return a specific game room. This will use an expanded serializer, where decks and cards are expanded into their full definitions.
+#### Use /rooms/[slug]/ to return a specific game room 
+> This will use an expanded serializer, where decks and cards are expanded into their full definitions.
 
-> Permissions: If not owner of deck it will be read-only. If user is not a player in the game room, no access is allowed. You can use the ?key=[secret] query to allow a guest through (if allow_guests is set) or to have a authenticated player join the room.
+```json
+{
+    "name": "Game Room Alpha",
+    "slug": "game-room-alpha",
+    "pk": 1,
+    "user_created": 1,
+    "players": [
+        1
+    ],
+    "deck": {
+        "name": "Deck B",
+        "slug": "deck-b",
+        "pk": 2,
+        "cards_in_deck": [],
+        "card_count": {
+            "count__sum": 3
+        },
+        "cards": [
+            {
+                "card": {
+                    "text": "Foo",
+                    "flavor_text": "Bar",
+                    "pk": 1
+                },
+                "count": 2
+            },
+            {
+                "card": {
+                    "text": "Xen",
+                    "flavor_text": "Hello world!",
+                    "pk": 2
+                },
+                "count": 1
+            }
+        ],
+        "cards_in_discard": [],
+        "card_displayed": null,
+        "in_play": false,
+        "date_edited": "2017-07-25T14:12:27.128000",
+        "date_created": "2017-07-25T14:12:27.128000",
+        "user_created": 1
+    },
+    "open_draw": true,
+    "date_edited": "2017-07-25T14:14:27.706000",
+    "date_created": "2017-07-25T14:14:23.112000"
+}
+```
 
-> Queries: ?since="%Y-%m-%d %H:%M:%S", check date_edited. 
+##### Permissions
+* Must be a player of the room (or pass the key in the query)
+* If not owner readonly is applied
+
+##### Queries 
+> ?since="%Y-%m-%d %H:%M:%S", check date_edited. Default not applied.
+> ?key=[text], key to the room. If user is authenticated and the key matches, they are added as a player to the room. If the user is anon, then access is checked against the allow_guests field of the room.
+> ?own=[true/false], check if requesting user created the card. Default True.
 
 ### Actions
 
-#### Get current displayed card /rooms/[slug]/get_current_card/
+#### Get Current Displayed Card 
+> 'GET' on /rooms/[slug]/get_current_card/
 
 Returns the current displayed card from the deck
 
-#### Draw card from deck /rooms/[slug]/draw_card/
+#### Draw Card 
+> 'GET' on /rooms/[slug]/draw_card/
 
 Discards the current card, draws a random card from the deck and sets is as the current displayed card, removes it from the deck, and returns the card.
 
 > Permissions: Checks if user is a player of the room (including the key as described above) AND if they can draw. This is set in the room object, with open_draw. If this is false, only the owner can draw a card.
 
-#### Start game /rooms/[slug]/start_game/
+#### Start Game 
+> 'GET' on /rooms/[slug]/start_game/
 
-Deep copies the room's deck_parent to deck, and sets it as in play. Returns the game room. Allows the above actions.
+Sets the deck in play. Clears cards_in_deck, cards_in_discard, and card displaed. Explodes all cards (the ones with counts) in the deck, and inserts a temp card for each that it needs for the defined count.
 
-> Permissions: User must be owner of room.
-
-#### Stop game /rooms/[slug]/stop_game/
-
-Removes the room's in play deck. Returns the game room. 
+Returns the deck in the 'in game' view.
 
 > Permissions: User must be owner of room.
 
-#### Close room /rooms/[slug]/close_room/
+#### Stop Game 
+> 'GET' on /rooms/[slug]/stop_game/
 
-Delete's the room.
-
-> Permissions: User must be owner of room.
-
-#### Reset deck /rooms/[slug]/reset_deck/
-
-Removes current deck and deep copies the room's deck_parent to deck, and sets it as in play. Returns the game room.
+Clears cards_in_deck, cards_in_discard, and card displaed. Sets deck as not in play. Returns the game room. 
 
 > Permissions: User must be owner of room.
 
-## User object /users/ lookup field 'username'
+#### Close Room 
+> 'GET' on /rooms/[slug]/close_room/
 
-> Will be removed, given to your app to manage
+Deletes the room.
+
+> Permissions: User must be owner of room.
+
+#### Reset Deck 
+> 'GET' on /rooms/[slug]/reset_deck/
+
+Keeps the deck in play. Moves all cards back to cards_in_deck.
+
+Returns the deck in the 'in game' view.
+
+> Permissions: User must be owner of room.
+
+#### Play View
+> 'GET' on /rooms/[slug]/play_view/
+
+Returns the deck in a semi-compressed view of only detail relevant for play.
+Same as is found in the 'decks' objects

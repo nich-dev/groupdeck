@@ -54,13 +54,13 @@ class DeckViewSet(viewsets.ModelViewSet):
         in_play = self.request.query_params.get('in_play', None)
         owned = self.request.query_params.get('owned', None)
         
+        if in_play is not None and self.request.user.is_staff:
+            queryset = models.Deck.objects.filter(in_play=in_play)
         if since is not None:
             last_time = datetime.strptime(since, '%Y-%m-%d %H:%M:%S')
             queryset = queryset.filter(date_edited__gte=last_time)
         if search is not None:
             queryset = queryset.filter(name__icontains = search)
-        if in_play is not None and self.request.user.is_staff:
-            queryset = queryset.filter(in_play = search)
         if owned is not None:
             queryset = queryset.filter(user_created = self.request.user)
             
@@ -80,7 +80,7 @@ class DeckViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST)
 
     #accepts a POST with a list of text and count fields
-     #ex [{"text": "Example card 1", "count": 2}, {"text": "Example card 2", "count": 1}]
+    #ex [{"text": "Example card 1", "count": 2}, {"text": "Example card 2", "count": 1}]
     @detail_route(methods=['POST'])
     def add_cards(self, request, slug=None):
         obj = self.get_object()

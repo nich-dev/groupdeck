@@ -1,4 +1,4 @@
-from api import permissions
+from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):

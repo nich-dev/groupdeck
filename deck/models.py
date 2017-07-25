@@ -275,15 +275,17 @@ class GameRoom(models.Model):
             new_card = Card(text=c.text, in_deck=True)
             new_card.save()
             temp_deck.cards.add(new_card)
+        self.stop_play()
         self.deck = temp_deck
         self.save()
         return self.deck
 
     def stop_play(self):#destroy the deck
-        old_deck_id = self.deck.pk
-        self.deck = None
-        self.save()
-        Deck.objects.get(pk = old_deck_id).delete()
+        if self.deck:
+            old_deck_id = self.deck.pk
+            self.deck = None
+            self.save()
+            Deck.objects.get(pk = old_deck_id).delete()
         return self
 
     def reset_deck(self):

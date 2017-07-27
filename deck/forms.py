@@ -58,17 +58,6 @@ class GameRoomForm(forms.ModelForm):
         self.request = kwargs.pop('request', None)
         super(GameRoomForm, self).__init__(*args, **kwargs)
 
-class DeckAdminForm(forms.ModelForm):
-    class Meta:
-        model = Deck
-        exclude = ('name',)
-        widgets = {
-            'cards': SearchableSelect(model='deck.CardInDeck', search_field='card__text', many=True),
-            'cards_in_deck': SearchableSelect(model='deck.Card', search_field='text', many=True),
-            'cards_in_discard': SearchableSelect(model='deck.Card', search_field='text', many=True),
-            'card_displayed': SearchableSelect(model='deck.Card', search_field='text', many=False),
-        }
-
 class CardInDeckAdminForm(forms.ModelForm):
     class Meta:
         model = CardInDeck

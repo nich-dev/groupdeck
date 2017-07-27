@@ -1,5 +1,6 @@
 from django import forms
-from models import (Card, Deck, GameRoom, colors)
+from models import (Card, Deck, GameRoom, colors, CardInDeck)
+from searchableselect.widgets import SearchableSelect
 
 class JoinRoomForm(forms.Form):
     name = forms.CharField(required=False, 
@@ -30,3 +31,48 @@ class JoinRoomForm(forms.Form):
                 label='Or choose a previously entered room',
                 required=False
             )
+
+class CardForm(forms.ModelForm):
+    class Meta:
+        model = Card
+        fields = ['text', 'flavor_text']
+
+class CardsInDeckForm(forms.Form):
+    card = forms.ModelChoiceField(
+            queryset=Card.objects.filter(in_deck=False),
+            required=False
+        )
+    count = forms.IntegerField()
+
+class DeckForm(forms.ModelForm):
+    class Meta:
+        model = Deck
+        fields = ['name', 'cards']
+
+class GameRoomForm(forms.ModelForm):
+    class Meta:
+        model = GameRoom
+        fields = ['name', 'deck', 'secret', 'open_draw', 'allow_guests']
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(GameRoomForm, self).__init__(*args, **kwargs)
+
+class DeckAdminForm(forms.ModelForm):
+    class Meta:
+        model = Deck
+        exclude = ('name',)
+        widgets = {
+            'cards': SearchableSelect(model='deck.CardInDeck', search_field='card__text', many=True),
+            'cards_in_deck': SearchableSelect(model='deck.Card', search_field='text', many=True),
+            'cards_in_discard': SearchableSelect(model='deck.Card', search_field='text', many=True),
+            'card_displayed': SearchableSelect(model='deck.Card', search_field='text', many=False),
+        }
+
+class CardInDeckAdminForm(forms.ModelForm):
+    class Meta:
+        model = CardInDeck
+        exclude = ()
+        widgets = {
+            'card': SearchableSelect(model='deck.Card', search_field='text', many=False),
+        }

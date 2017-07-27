@@ -15,6 +15,9 @@
       <div class="row center">
       {% if not user.is_authenticated %}
       <a href="#login-modal" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger">Login</a>
+      {% else %}
+      <a href="/create/room/" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger">Create a Room</a>
+      <a href="/personal/" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger">Edit your Decks</a>
       {% endif %}
       <a href="#room1" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger no-ajaxy">Join a room</a>
       </div>

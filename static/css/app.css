@@ -712,3 +712,7 @@ li.export{
 .parallax img { display: block;
 	bottom:1px;
  }
+
+.container.z-depth-1{
+		background:#fefefe;
+	}

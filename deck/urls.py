@@ -13,5 +13,7 @@ urlpatterns = [
    url(r'^v2/', include(router.urls)),  
    url(r'^room/(?P<slug>.+)/(?P<key>.+)/', views.Room.as_view(), name="game-room-key"), 
    url(r'^room/(?P<slug>.+)/', views.Room.as_view(), name="game-room-slug"), 
-   url(r'^room/', views.Room.as_view(), name="game-room"),  
+   url(r'^room/', views.Room.as_view(), name="game-room"),
+   url(r'^create/room/', views.RoomCreate.as_view(), name="create-room"),  
+   url(r'^update/room/(?P<slug>.+)/', views.RoomUpdate.as_view(), name="update-room"),  
 ]

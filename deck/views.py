@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.generic import (TemplateView, FormView, RedirectView,
                                   UpdateView, CreateView)
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.utils.decorators import method_decorator
+from django.views.decorators.debug import sensitive_post_parameters
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseServerError
+from django.core.exceptions import PermissionDenied
 import models, forms
 
 def get_theme(request):
@@ -89,4 +94,69 @@ class Room(TemplateView):
         context['obj'] = self.get_object()
         context['can_draw'] = self.can_draw()
         context['title'] = 'Deck'
+        return context
+
+class RoomCreate(CreateView):
+    model = models.GameRoom
+    form_class = forms.GameRoomForm
+    success_url = '/deck/'
+    
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return ['forms/room.html']
+        else:
+            return ['container/form.room.html']
+        
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(RoomCreate, self).dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('deck:update-room',args=(self.object.slug,))
+
+    def form_valid(self, form):
+        clean = form.cleaned_data      
+        obj = form.save(commit=False)
+        obj.user_created = self.request.user
+        obj.save()
+        return super(RoomCreate, self).form_valid(form)  
+        
+    def get_context_data(self, **kwargs):
+        context = super(RoomCreate, self).get_context_data(**kwargs)
+        context['form'].fields['deck'].queryset = models.Deck.objects.filter(user_created=self.request.user)
+        context['title'] = 'Deck'
+        context['theme'] = get_theme(self.request)
+        context['pagetitle'] = 'Create a Game Room'
+        return context
+
+class RoomUpdate(UpdateView):
+    model = models.GameRoom
+    form_class = forms.GameRoomForm
+    success_url = '/deck/'
+    
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return ['forms/room.html']
+        else:
+            return ['container/form.room.html']
+        
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(RoomUpdate, self).dispatch(*args, **kwargs)
+
+    def get_object(self, *args, **kwargs):
+        obj = super(RoomUpdate, self).get_object(*args, **kwargs)
+        if obj.user_created != self.request.user:
+            raise PermissionDenied() #or Http404
+        return obj
+
+    def get_success_url(self):
+        return reverse('deck:update-room',args=(self.object.slug,))
+
+    def get_context_data(self, **kwargs):
+        context = super(RoomUpdate, self).get_context_data(**kwargs)
+        context['form'].fields['deck'].queryset = models.Deck.objects.filter(user_created=self.request.user)
+        context['title'] = 'Deck'
+        context['theme'] = get_theme(self.request)
+        context['pagetitle'] = 'Edit '+self.get_object().name
         return context

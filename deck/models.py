@@ -202,7 +202,7 @@ class Deck(models.Model):
         return self
 
 class GameRoom(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     players = models.ManyToManyField(settings.AUTH_USER_MODEL,#users that are playing, passed the secret password
                                     help_text=_('Users allowed in game room'), #make sure to add owner
                                     related_name="player_set",blank=True)

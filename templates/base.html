@@ -4,26 +4,25 @@
   <div class="section no-pad-bot">
     <div class="container">
       <br><br>
-      	<h1 class="header center white-text text-lighten-2 text-drop-shadow">CITI, LLC Calibration</h1>
+      	<h1 class="header center white-text text-lighten-2 text-drop-shadow">Deck.</h1>
       <div class="row center">
       {% if user.is_authenticated %}
         <h5 class="header col s12 white-text light text-drop-shadow">Hello, {{ user.username }}</h5>
       {% else %}
-        <h5 class="header col s12 white-text light text-drop-shadow">A place to collect calibration readings and input tasks</h5>
+        <h5 class="header col s12 white-text light text-drop-shadow">A place to draw cards in a room of people</h5>
       {% endif %}
       </div>
       <div class="row center">
-      {% if user.is_authenticated %}
-        <a href="/dashboard/" id="register-button" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme">Go to My Dashboard</a>
-      {% else %}
+      {% if not user.is_authenticated %}
       <a href="#login-modal" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger">Login</a>
       {% endif %}
+      <a href="#room1" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger no-ajaxy">Join a room</a>
       </div>
       <br><br>
 
     </div>
   </div>
-  <div class="parallax"><img src="{% static "img/mmtn.jpg" %}" alt="Unsplashed background img 1"></div>
+  <div class="parallax"><img src="{% static "img/mb.png" %}" alt="Unsplashed background img 1"></div>
 </div>
 
 
@@ -35,27 +34,27 @@
       <div class="col s12 m4">
         <div class="icon-block">
           <h2 class="center {{ theme }}-text theme"><i class="material-icons">trending_up</i></h2>
-          <h5 class="center">Calibrations</h5>
+          <h5 class="center">Cards</h5>
 
-          <p class="light">Ea mel porro epicuri, mei ne integre mediocrem. Choro expetendis nam ei, cu mundi quidam per, aeque utroque dissentias sed ut. Ne vim vitae oratio reprimique, mel nulla verear recusabo in. Te pri semper bonorum probatus, omnes numquam forensibus vix eu.</p>
+          <p class="light">Create unique cards to draw, really, let your imagination run wild!</p>
         </div>
       </div>
 
       <div class="col s12 m4">
         <div class="icon-block">
           <h2 class="center {{ theme }}-text theme"><i class="material-icons">group</i></h2>
-          <h5 class="center">Tasks</h5>
+          <h5 class="center">Decks</h5>
 
-          <p class="light">Ex duo vivendum moderatius, ad vis cibo legere habemus, veri erant vix at. Mei cu facete oblique, mei et praesent scripserit, vidisse referrentur ex qui. Ea mei decore mucius, et his ludus diceret feugiat. Ei laudem postea praesent ius. Quo sonet civibus indoctum an, eam at omnium probatus assentior.</p>
+          <p class="light">Build decks of these cards with as many combinations as possible!</p>
         </div>
       </div>
 
       <div class="col s12 m4">
         <div class="icon-block">
           <h2 class="center {{ theme }}-text theme"><i class="material-icons">dashboard</i></h2>
-          <h5 class="center">Create</h5>
+          <h5 class="center">Rooms</h5>
 
-          <p class="light">Lorem ipsum dolor sit amet, mentitum adipisci percipitur has ne, laudem expetenda vis ei. His eu velit sonet aliquam, eu soleat urbanitas quo. Eu paulo ocurreret corrumpit pro, solum modus insolens mei ex. Ius ei erat inani fabellas, cibo iuvaret ei eos. Vix cu albucius deseruisse. Nam nihil indoctum comprehensam ea.</p>
+          <p class="light">And finally play with them and show your friends by drawing random cards within a group!</p>
         </div>
       </div>
     </div>
@@ -68,11 +67,11 @@
   <div class="section no-pad-bot">
     <div class="container">
       <div class="row center">
-        <h5 class="header col s12 light grey-text lighten-1">Android App !whenready</h5>
+        <h5 class="header col s12 light grey-text lighten-1">...</h5>
       </div>
     </div>
   </div>
-  <div class="parallax"><img src="{% static "img/mb.png" %}" alt="Unsplashed background img 2"></div>
+  <div class="parallax"><img src="{% static "img/mmtn.jpg" %}" alt="Unsplashed background img 2"></div>
 </div>
 
 <div class="container">
@@ -85,11 +84,18 @@
 
   </div>
 </div>
-
+{% include 'info.html' %}
 <!-- Modals -->
 <div id="render" data-theme="{{ theme }}"></div>
+<div id="login-modal" class="modal">
+  {% include 'forms/login.html' %}
+</div>
+<div id="room1" class="modal">
+  <div class="modal-content">
+      {% include 'forms/join.html' %}
+    </div>
 </div>
 
-<div id="login-modal" class="modal">
-	{% include 'forms/login.html' %}
 </div>
+
+

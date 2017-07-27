@@ -1,0 +1,26 @@
+<form method="post" action="/deck/room/">
+	<div>
+		{% csrf_token %}
+	            <div class="card-content">
+	              <p class="card-title">Join a Game Room</p>
+	              {% for field in joinform %}
+	              {% if field.label == 'Name' %}
+		            <div class="row">
+		            	<div class="col s12 m6">
+		              	  {{ field.label_tag }} {{ field }} 
+		                </div>
+	              {% elif field.label == 'Password' %}
+	              	    <div class= "col s12 m6">
+	              	      {{ field.label_tag }} {{ field }} 
+	                    </div>
+	                </div>
+	              {% elif field.label == 'Or choose a previously entered room' and user.is_authenticated %}
+	              	      {{ field.label_tag }} {{ field }} 
+	              {% endif %}
+	              {% endfor %}
+	            </div>
+	            <div class="card-action">
+	              <input class="col waves-effect waves-green {{ theme }} btn-large btn center" type="submit" style="float:none" value="Join"  />
+	            </div>		
+	</div>
+</form>

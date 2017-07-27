@@ -1,0 +1,27 @@
+<div id="content" class="">
+     <div class="row container">
+	     <div class="col s10 push-s1 m6 push-m3">
+			<form method="post" action="">
+				<div>
+				    <h4 class="{{ theme }}-text darken-3 theme">Edit Profile</h4>
+					        {% csrf_token %}
+						    {% for field in form %}
+							    <div class="row">
+							        <div class="input-field col s12">
+							        {{ field }}{% if not field.is_hidden %}{{ field.label_tag }}{% endif %}
+							        </div>
+							        {% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}
+							        {% if field.help_text %}
+							        <p class="help">{{ field.help_text|safe }}</p>
+							        {% endif %}
+							    </div>
+							    
+							{% endfor %}
+					<input class="col {{ theme }}-text waves-effect waves-green btn-flat throw-left theme" type="submit" value="Save"  />
+					<a class="col {{ theme }}-text waves-effect waves-green btn-flat throw-left theme" href="/accounts/edit/password/"  >Change Password</a>
+				</div>
+			</form>
+		</div>
+	</div>
+	{% include 'info.html' %}
+</div>

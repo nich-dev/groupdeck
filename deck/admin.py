@@ -8,8 +8,9 @@ import models
 
 @admin.register(models.Card)
 class CardAdmin(admin.ModelAdmin):
-    list_display = ('text', 'date_created')
+    list_display = ('text', 'date_created', 'in_deck')
     search_fields = ('text',)
+    list_filter = ('in_deck', 'user_created')
 
 @admin.register(models.CardInDeck)
 class CardInDeckAdmin(admin.ModelAdmin):

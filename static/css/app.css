@@ -708,3 +708,7 @@ li.export{
 	display: inline-block;
 	font-size: 1.8rem;
 }
+#title-change {display: none;}
+.parallax img { display: block;
+	bottom:1px;
+ }

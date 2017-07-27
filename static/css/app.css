@@ -716,3 +716,6 @@ li.export{
 .container.z-depth-1{
 		background:#fefefe;
 	}
+#room1 {
+	overflow-y:visible;
+}

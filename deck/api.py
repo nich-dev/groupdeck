@@ -197,11 +197,12 @@ class GameRoomViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         since = self.request.query_params.get('since', None)
-        own = str2bool(self.request.query_params.get('own', True))
+        own = self.request.query_params.get('own', None)
         queryset = models.GameRoom.objects.all()
 
-        if own:
-            queryset = queryset.filter(user_created = self.request.user)        
+        if own and not self.request.user.is_anonymous():
+            if str2bool(own):
+                queryset = queryset.filter(user_created = self.request.user)        
         if since is not None:
             last_time = datetime.strptime(since, '%Y-%m-%d %H:%M:%S')
             queryset = queryset.filter(date_edited__gte=last_time)
@@ -276,7 +277,7 @@ class GameRoomViewSet(viewsets.ModelViewSet):
         return Response(serializer.data,
             status=status.HTTP_200_OK)
 
-    @detail_route()
+    @detail_route(permission_classes=[deckpermissions.IsPlayer])
     def play_view(self, request, slug=None):
         obj = self.get_object()
         self.check_object_permissions(request, obj)

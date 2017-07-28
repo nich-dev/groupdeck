@@ -719,3 +719,118 @@ li.export{
 #room1 {
 	overflow-y:visible;
 }
+
+/* GAME ROOM */
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+.cards-wrapper>.card {
+  border: solid 3px #ccc;
+  position: relative;
+  display: table;
+  font-weight: 700;
+  font-size: 20px;
+  width: 250px;
+  height: 350px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: bottom center;
+  z-index: 4;
+  user-select: none;
+  cursor: pointer;
+}
+
+.cards-wrapper>.card.front {
+  z-index: 5;
+}
+
+.cards-wrapper>.card>.card-text {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  padding-bottom: 25px;
+  opacity: 1;
+  transition: opacity 250ms ease;
+}
+
+.cards-wrapper>.card .card-flavor {
+  position: absolute;
+  left: 0;
+  font-weight: 400;
+  font-size: .8em;
+  width: 100%;
+  bottom: 25%;
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  transition: opacity 250ms ease;
+}
+
+.cards-wrapper.switching>.card {
+  animation-play-state: running;
+  animation-delay: 165ms;
+}
+
+.cards-wrapper.switch-pt1>.card .card-text,
+.cards-wrapper.switch-pt2>.card .card-text,
+.cards-wrapper.switch-pt1>.card .card-flavor,
+.cards-wrapper.switch-pt2>.card .card-flavor {
+  opacity: 0;
+}
+
+.cards-wrapper.switch-pt1>.card.front {
+  animation: .375s switch-card-pt1 1 ease-in-out;
+  -webkit-animation: .375s switch-card-pt1 1 ease-in-out;
+
+}
+
+.cards-wrapper.switch-pt2>.card.front {
+  animation: .375s switch-card-pt2 1 ease-in-out;
+  -webkit-animation: .375s switch-card-pt2 1 ease-in-out;
+}
+
+@keyframes switch-card-pt1 {
+  0% {
+    transform: translate(-50%, -50%);
+  }
+  99% {
+    z-index: 5;
+  }
+  100% {
+    transform: translate(calc(-50% - 250px), -50%) rotate(-12.5deg);
+    z-index: 3;
+  }
+}
+
+@-webkit-keyframes switch-card-pt1 {
+  0% {
+    transform: translate(-50%, -50%);
+  }
+  99% {
+    z-index: 5;
+  }
+  100% {
+    transform: translate(calc(-50% - 250px), -50%) rotate(-12.5deg);
+    z-index: 3;
+  }
+}
+
+@keyframes switch-card-pt2 {
+  0% {
+    transform: translate(calc(-50% - 250px), -50%) rotate(-12.5deg);
+    z-index: 3;
+  }
+  100% {
+    transform: translate(-50%, -52%) rotate(0deg) scale(0.97);
+    z-index: 3;
+  }
+}

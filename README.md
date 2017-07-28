@@ -7,6 +7,7 @@ Sometimes you want to draw a card from a deck in a group of people online. This 
 * django
 * djangorestframwork
 * django-searchable-select
+* django-braces
 
 # API
 

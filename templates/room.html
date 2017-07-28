@@ -1,5 +1,7 @@
 {% load staticfiles %}
+
 <div id="content">
+
 
   <div class="section no-pad-bot">
     <div class="container">
@@ -18,37 +20,13 @@
 
       <!--   Icon Section   -->
       <div class="row">
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center {{ theme }}-text theme"><i class="material-icons">trending_up</i></h2>
-            <h5 class="center">discarded</h5>
-
-            <p class="light">stuff</p>
-          </div>
-        </div>
-
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center {{ theme }}-text theme"><i class="material-icons">group</i></h2>
-            <h5 class="center">on display</h5>
-
-            <p class="light">drawn</p>
-          </div>
-        </div>
-
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center {{ theme }}-text theme"><i class="material-icons">dashboard</i></h2>
-            <h5 class="center">remaining</h5>
-
-            <p class="light">the deck</p>
-          </div>
-        </div>
+        {% include 'blocks/room.html' %}
       </div>
 
     </div>
   </div>
 </div>
+
 {% include 'info.html' %}
 </div>
 

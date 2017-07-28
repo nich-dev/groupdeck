@@ -45,7 +45,10 @@ var initialize_generic = function(){
     $('#spinner-load').stop( true, true ).fadeOut(200);
     change_title();
     $('select').material_select();
-    Materialize.updateTextFields();  
+    Materialize.updateTextFields();
+    if ($('.game-wrapper').length > 0) {
+        app.ready();
+    }
 }
 
 var initialize_first = function(){

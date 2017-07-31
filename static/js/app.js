@@ -44,6 +44,7 @@ var initialize_generic = function(){
     $('.tooltipped').tooltip({delay: 50});
     $('#spinner-load').stop( true, true ).fadeOut(200);
     change_title();
+    init_forms();
     $('select').material_select();
     Materialize.updateTextFields();
     if ($('.game-wrapper').length > 0) {
@@ -67,5 +68,12 @@ var change_title = function(){
         var text = $('#title-change').text();
         document.title = text;
         $('#logo-container').text(text);
+    };
+}
+
+var init_forms = function(){
+    if ($('#card-list').length > 0) {
+        var list = document.getElementById('card-list');
+        var cardList = Sortable.create(list);
     };
 }

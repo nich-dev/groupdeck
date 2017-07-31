@@ -32,8 +32,15 @@ class Landing(TemplateView):
         context['form'] = AuthenticationForm
         context['joinform'] = forms.JoinRoomForm(request=self.request)
         context['title'] = 'Deck'
+        if not self.request.user.is_anonymous():
+            context['pagetitle'] = self.request.user.username.title() + "'s Dashboard"
+            context['cardform'] = forms.CardForm()
+            context['cards'] = models.Card.objects.filter(user_created = self.request.user, in_deck = False).order_by('-date_edited')[:50]
+            context['decks'] = models.Deck.objects.filter(user_created = self.request.user).order_by('-date_edited')
+            context['rooms'] = models.GameRoom.objects.filter(user_created = self.request.user).order_by('-date_edited')
         return context
 
+#--Playing
 class Room(TemplateView):
     def get_template_names(self):
         if self.request.is_ajax():
@@ -96,6 +103,8 @@ class Room(TemplateView):
         context['title'] = 'Deck'
         return context
 
+#--OBJECT MANIPULATION
+#----Room Objects
 class RoomCreate(CreateView):
     model = models.GameRoom
     form_class = forms.GameRoomForm
@@ -111,9 +120,6 @@ class RoomCreate(CreateView):
     def dispatch(self, *args, **kwargs):
         return super(RoomCreate, self).dispatch(*args, **kwargs)
 
-    def get_success_url(self):
-        return reverse('deck:update-room',args=(self.object.slug,))
-
     def form_valid(self, form):
         clean = form.cleaned_data      
         obj = form.save(commit=False)
@@ -123,7 +129,7 @@ class RoomCreate(CreateView):
         
     def get_context_data(self, **kwargs):
         context = super(RoomCreate, self).get_context_data(**kwargs)
-        context['form'].fields['deck'].queryset = models.Deck.objects.filter(user_created=self.request.user)
+        context['form'].fields['deck'].queryset = models.Deck.objects.filter(user_created=self.request.user, in_play=False)
         context['title'] = 'Deck'
         context['theme'] = get_theme(self.request)
         context['pagetitle'] = 'Create a Game Room'
@@ -150,13 +156,17 @@ class RoomUpdate(UpdateView):
             raise PermissionDenied() #or Http404
         return obj
 
-    def get_success_url(self):
-        return reverse('deck:update-room',args=(self.object.slug,))
-
     def get_context_data(self, **kwargs):
         context = super(RoomUpdate, self).get_context_data(**kwargs)
-        context['form'].fields['deck'].queryset = models.Deck.objects.filter(user_created=self.request.user)
+        context['form'].fields['deck'].queryset = models.Deck.objects.filter(user_created=self.request.user, in_play=False)
         context['title'] = 'Deck'
         context['theme'] = get_theme(self.request)
         context['pagetitle'] = 'Edit '+self.get_object().name
         return context
+
+#--OBJECT MANIPULATION
+#----Deck Objects
+
+#--OBJECT MANIPULATION
+#----Card Objects
+#------Lets try to keep this in the js

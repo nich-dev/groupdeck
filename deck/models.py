@@ -25,7 +25,7 @@ colors = (
 
 DEF_MAX_ALLOWED_CARDS = 500
 DEF_MAX_ALLOWED_DECKS = 5
-DEF_MAX_ALLOWED_ROOMS = 1
+DEF_MAX_ALLOWED_ROOMS = 2
 def get_max_count():
     try:
         if settings.MAX_ALLOWED_CARDS:
@@ -33,6 +33,20 @@ def get_max_count():
         else: return DEF_MAX_ALLOWED_CARDS
     except:
         return DEF_MAX_ALLOWED_CARDS
+def get_max_decks():
+    try:
+        if settings.MAX_ALLOWED_DECKS:
+            return settings.MAX_ALLOWED_DECKS
+        else: return DEF_MAX_ALLOWED_DECKS
+    except:
+        return DEF_MAX_ALLOWED_DECKS
+def get_max_rooms():
+    try:
+        if settings.MAX_ALLOWED_ROOMS:
+            return settings.MAX_ALLOWED_ROOMS
+        else: return DEF_MAX_ALLOWED_ROOMS
+    except:
+        return DEF_MAX_ALLOWED_ROOMS
 # Create your models here.
 class Card(models.Model):
     text = models.CharField(max_length=255)# action text
@@ -210,9 +224,9 @@ class GameRoom(models.Model):
     open_draw = models.BooleanField(default=True,
                                     help_text=_('Allow anyone to draw a card'))
     secret = models.CharField(max_length=50,blank=True,null=True,
-                                    help_text=_('Secret key to let someone in the room'))
-    allow_guests = models.BooleanField(default=True,
-                                    help_text=_('Allow anyone to play with the secret key without signing in'))
+                                    help_text=_('Secret password to let someone in the room'))
+    allow_guests = models.BooleanField(default=False,
+                                    help_text=_('Allow anyone to play with the secret key without being signed into the website'))
     finished = models.BooleanField(default=False,
                                     help_text=_('Mark for destruction'))
 

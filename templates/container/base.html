@@ -23,10 +23,6 @@
     
     <!-- CDNJS :: Sortable (https://cdnjs.com/) -->
 	<script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
-    
-    <!-- Select2 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2-rc.1/css/select2.min.css" rel="stylesheet" />
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2-rc.1/js/select2.min.js"></script>
 	
 	 <!-- MaterializeCSS -->
 	  <!-- Compiled and minified CSS -->
@@ -60,10 +56,5 @@
   {% block body %}
 	{% include 'base.html' %}
   {% endblock %}
-  {% if not user.is_authenticated %}
-  <!-- Modal Structure -->
-  <div id="modal-login" class="modal">
-  </div>
-  {% endif %}
   </body>  
 </html>

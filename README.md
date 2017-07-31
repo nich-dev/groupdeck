@@ -5,9 +5,9 @@ Sometimes you want to draw a card from a deck in a group of people online. This 
 ## Dependencies
 
 * django
-* djangorestframwork
-* django-searchable-select
-* django-braces
+* djangorestframwork 
+* django-searchable-select (for the admin panel)
+* django-braces (for permissions)
 
 # API
 
@@ -17,11 +17,11 @@ The api is found at [host api path]/v2/[object]/ in the example.
 ```python
 from django.conf.urls import include, url
 #...
-from deck import urls as deck_urls
+from deck import api_urls
 
 urlpatterns = [
    # Rename "deck" with your desired location
-   url(r'^deck/', include(deck_urls)),
+   url(r'^deck/api/', include(api_urls)),
    #...
 ]
 ```
@@ -391,3 +391,8 @@ Returns the deck in the 'in game' view.
 
 Returns the deck in a semi-compressed view of only detail relevant for play.
 Same as is found in the 'decks' objects
+
+### We include a normal views.py file 
+* This returns normal html
+* You can include the urls.py by adding "from deck import urls as deck_urls" to your urls.py and including it
+* Check our main project for the html file names it is looking for, and build your frontend

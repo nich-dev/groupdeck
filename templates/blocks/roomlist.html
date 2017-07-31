@@ -1,0 +1,41 @@
+<ul id="room-list" class="collection with-header z-depth-1">
+    <li class="collection-header">
+        <h5 class="inline">Your Game Rooms</h5>
+        <a href="/deck/create/room/" class="waves-effect waves-teal btn-flat {{ theme }}-text tooltipped" data-position="top" data-tooltip="Add Another"><i class="material-icons {{ theme }}-text">add</i></a>
+    </li>
+    {% for r in rooms %}
+        <li class="collection-item" data-pk="{{ r.pk }}">
+            <div class="card">
+                <div class="card-content">
+                  <span class="card-title activator">
+                    {% if r.deck.in_play %}
+                        <i class="material-icons orange-text tooltipped" data-position="top" data-tooltip="Game in session">pause</i>
+                    {% else %}
+                        <i class="material-icons {{ theme }}-text tooltipped" data-position="top" data-tooltip="Game not started">play_arrow</i>
+                    {% endif %}
+                    {{ r.name }}<i class="material-icons right {{ theme }}-text">more_vert</i></span>
+                  <p>Password: {{ r.secret }} <br>
+                  Using deck: {{ r.deck.name }} <!-- <br>
+                  <a href="/deck/room/{{ r.slug }}/" class="btn waves-effect waves-light {{ theme }}">Join</a> -->
+                  </p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title">&nbsp;<i class="material-icons right">close</i></span>&nbsp;&nbsp;&nbsp;
+                  <a class="tooltipped" data-position="top" data-tooltip="Join Room" href="/deck/room/{{ r.slug }}/"><i class="material-icons">launch</i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <a class="tooltipped" data-position="top" data-tooltip="Edit" href="/deck/update/room/{{ r.slug }}/"><i class="material-icons">edit</i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <a class="tooltipped modal-trigger" data-position="top" data-tooltip="Delete" href="#modal-delete-room-{{ r.pk }}"><i class="material-icons js-remove">delete_forever</i></a>
+                </div>
+            </div>
+            <div id="modal-delete-room-{{ r.pk }}" class="modal">
+                <div class="modal-content">
+                  <h4>Delete {{ r.name }}</h4>
+                  <p>Are you sure you want to delete this room? This action is permanent.</p>
+                </div>
+                <div class="modal-footer">
+                  <a href="#!" class="modal-action modal-close room-delete waves-effect waves-green btn-flat red-text" data-slug="{{ r.slug }}">Delete</a>
+                  <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>

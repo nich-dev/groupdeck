@@ -1,112 +1,23 @@
 {% load staticfiles %}
 <div id="content">
-<div id="index-banner" class="parallax-container">
-  <div class="section no-pad-bot">
-    <div class="container">
-      <br><br>
-      	<h1 class="header center white-text text-lighten-2 text-drop-shadow">Deck.</h1>
-      <div class="row center">
-      {% if user.is_authenticated %}
-        <h5 class="header col s12 white-text light text-drop-shadow">Hello, {{ user.username }}</h5>
-      {% else %}
-        <h5 class="header col s12 white-text light text-drop-shadow">A place to draw cards in a room of people</h5>
-      {% endif %}
-      </div>
-      <div class="row center">
-      {% if not user.is_authenticated %}
-      <a href="#login-modal" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger">Login</a>
-      {% else %}
-      <a href="/create/room/" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger">Create a Room</a>
-      <a href="/personal/" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger">Edit your Decks</a>
-      {% endif %}
-      <a href="#room1" class="btn-large waves-effect waves-light {{ theme }} lighten-1 theme modal-trigger no-ajaxy">Join a room</a>
-      </div>
-      <br><br>
+  {% if user.is_authenticated %}
+    {% include 'blocks/splash.loggedin.html' %}
+  {% else %}
+    {% include 'blocks/splash.html' %}
+  {% endif %}
 
-    </div>
+  {% include 'blocks/footer.html' %}
+  {% include 'info.html' %}
+  <!-- Modals -->
+  <div id="render" data-theme="{{ theme }}"></div>
+  <div id="login-modal" class="modal">
+    {% include 'forms/login.html' %}
   </div>
-  <div class="parallax"><img src="{% static "img/mb.png" %}" alt="Unsplashed background img 1"></div>
-</div>
-
-
-<div class="container">
-  <div class="section">
-
-    <!--   Icon Section   -->
-    <div class="row">
-      <div class="col s12 m4">
-        <div class="icon-block">
-          <h2 class="center {{ theme }}-text theme"><i class="material-icons">trending_up</i></h2>
-          <h5 class="center">Cards</h5>
-
-          <p class="light">Create unique cards to draw, really, let your imagination run wild!</p>
-        </div>
+  <div id="room1" class="modal">
+    <div class="modal-content">
+        {% include 'forms/join.html' %}
       </div>
-
-      <div class="col s12 m4">
-        <div class="icon-block">
-          <h2 class="center {{ theme }}-text theme"><i class="material-icons">group</i></h2>
-          <h5 class="center">Decks</h5>
-
-          <p class="light">Build decks of these cards with as many combinations as possible!</p>
-        </div>
-      </div>
-
-      <div class="col s12 m4">
-        <div class="icon-block">
-          <h2 class="center {{ theme }}-text theme"><i class="material-icons">dashboard</i></h2>
-          <h5 class="center">Rooms</h5>
-
-          <p class="light">And finally play with them and show your friends by drawing random cards within a group!</p>
-        </div>
-      </div>
-    </div>
-
   </div>
-</div>
-
-
-<div class="parallax-container valign-wrapper" style="height:250px">
-  <div class="section no-pad-bot">
-    <div class="container">
-      <div class="row center">
-        <h5 class="header col s12 light grey-text lighten-1">...</h5>
-      </div>
-    </div>
-  </div>
-  <div class="parallax"><img src="{% static "img/mmtn.jpg" %}" alt="Unsplashed background img 2"></div>
-</div>
-
-<div class="container">
-  <div class="section">
-    <div class="row">
-      <div class="col s12 m6 center">
-        <h5><a class="no-ajaxy" href="https://github.com/npholley/groupdeck">Deck.</a> is built by</h5>
-        <a class="no-ajaxy" href="https://github.com/npholley">npholley</a> <span>&nbsp;and&nbsp;<a class="no-ajaxy" href="https://github.com/ShawnCG">ShawnCG</a>
-      </div>
-      <div class="col s12 m6 center">
-        <h5>Deck. uses</h5>
-        <a class="no-ajaxy" href="https://www.djangoproject.com/">django, </a>
-        <a class="no-ajaxy" href="http://www.django-rest-framework.org/">django rest framework, </a>
-        <a class="no-ajaxy" href="http://materializecss.com/">materialize css.</a>
-      </div>
-    </div>
-    <div class="row">
-      
-    </div>
-  </div>
-</div>
-{% include 'info.html' %}
-<!-- Modals -->
-<div id="render" data-theme="{{ theme }}"></div>
-<div id="login-modal" class="modal">
-  {% include 'forms/login.html' %}
-</div>
-<div id="room1" class="modal">
-  <div class="modal-content">
-      {% include 'forms/join.html' %}
-    </div>
-</div>
 
 </div>
 

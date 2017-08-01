@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.generic import (TemplateView, FormView, RedirectView,
-                                  UpdateView, CreateView)
+                                  UpdateView, CreateView, DeleteView)
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
@@ -231,3 +231,14 @@ class CardUpdate(UpdateView):
         context['theme'] = get_theme(self.request)
         context['pagetitle'] = 'Edit Card '+ str(self.get_object().pk)
         return context
+
+class CardDelete(DeleteView):
+    model = models.Card
+    success_url = '/deck/'
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if self.request.user != obj.user_created:
+            raise PermissionDenied()
+        obj.delete()
+        return redirect(self.success_url)

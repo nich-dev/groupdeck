@@ -9,5 +9,6 @@ urlpatterns = [
    url(r'^create/room/', views.RoomCreate.as_view(), name="create-room"),  
    url(r'^update/room/(?P<slug>.+)/', views.RoomUpdate.as_view(), name="update-room"),
    url(r'^create/card/', views.CardCreate.as_view(), name="create-card"),  
-   url(r'^update/card/(?P<pk>.+)/', views.CardUpdate.as_view(), name="update-card"),  
+   url(r'^update/card/(?P<pk>.+)/', views.CardUpdate.as_view(), name="update-card"), 
+   url(r'^delete/card/(?P<pk>.+)/', views.CardDelete.as_view(), name="delete-card"),  
 ]

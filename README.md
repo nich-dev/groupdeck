@@ -9,6 +9,8 @@ Sometimes you want to draw a card from a deck in a group of people online. This 
 * django-searchable-select (for the admin panel)
 * django-braces (for permissions)
 
+> Still not a full release
+
 # API
 
 The api is found at [host api path]/v2/[object]/ in the example.

@@ -21,7 +21,7 @@
       {% endif %}
       </div>
       <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close card-delete waves-effect waves-green btn-flat red-text left" data-pk="{{ r.pk }}">Delete</a>
+        <a href="/deck/delete/card/{{ c.pk }}/" class="card-delete waves-effect waves-red btn-flat red-text left" data-pk="{{ r.pk }}">Delete</a>
         <input class="waves-effect waves-green btn-flat {{ theme }}-text" type="submit" value="Save"  />
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
       </div>

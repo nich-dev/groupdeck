@@ -35,9 +35,12 @@ class Landing(TemplateView):
         if not self.request.user.is_anonymous():
             context['pagetitle'] = self.request.user.username.title() + "'s Dashboard"
             context['cardform'] = forms.CardForm()
-            context['cards'] = models.Card.objects.filter(user_created = self.request.user, in_deck = False).order_by('-date_edited')[:50]
+            context['cards'] = models.Card.objects.filter(user_created = self.request.user, in_deck = False).order_by('-date_edited')[:15]
+            context['cardsmax'] = models.Card.objects.filter(user_created=self.request.user, in_deck = False).count() > models.get_max_cards()
             context['decks'] = models.Deck.objects.filter(user_created = self.request.user).order_by('-date_edited')
+            context['decksmax'] = models.Deck.objects.filter(user_created=self.request.user).count() > models.get_max_decks()
             context['rooms'] = models.GameRoom.objects.filter(user_created = self.request.user).order_by('-date_edited')
+            context['roomsmax'] = models.GameRoom.objects.filter(user_created=self.request.user).count() > models.get_max_rooms()
         return context
 
 #--Playing
@@ -118,6 +121,8 @@ class RoomCreate(CreateView):
         
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
+        if models.GameRoom.objects.filter(user_created=self.request.user).count() > models.get_max_rooms():
+            raise PermissionDenied()
         return super(RoomCreate, self).dispatch(*args, **kwargs)
 
     def form_valid(self, form):
@@ -169,4 +174,60 @@ class RoomUpdate(UpdateView):
 
 #--OBJECT MANIPULATION
 #----Card Objects
-#------Lets try to keep this in the js
+class CardCreate(CreateView):
+    model = models.Card
+    form_class = forms.CardForm
+    success_url = '/deck/'
+    
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return ['forms/room.html']
+        else:
+            return ['container/form.room.html']
+        
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        if models.Card.objects.filter(user_created=self.request.user, in_deck=False).count() > models.get_max_cards():
+            raise PermissionDenied()
+        return super(CardCreate, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        clean = form.cleaned_data      
+        obj = form.save(commit=False)
+        obj.user_created = self.request.user
+        obj.save()
+        return super(CardCreate, self).form_valid(form)  
+        
+    def get_context_data(self, **kwargs):
+        context = super(CardCreate, self).get_context_data(**kwargs)
+        context['title'] = 'Deck'
+        context['theme'] = get_theme(self.request)
+        context['pagetitle'] = 'Create a Card'
+
+class CardUpdate(UpdateView):
+    model = models.Card
+    form_class = forms.CardDetailForm
+    success_url = '/deck/'
+    
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return ['forms/room.html']
+        else:
+            return ['container/form.room.html']
+        
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CardUpdate, self).dispatch(*args, **kwargs)
+
+    def get_object(self, *args, **kwargs):
+        obj = super(CardUpdate, self).get_object(*args, **kwargs)
+        if obj.user_created != self.request.user:
+            raise PermissionDenied() #or Http404
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(CardUpdate, self).get_context_data(**kwargs)
+        context['title'] = 'Deck'
+        context['theme'] = get_theme(self.request)
+        context['pagetitle'] = 'Edit Card '+ str(self.get_object().pk)
+        return context

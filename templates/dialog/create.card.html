@@ -1,0 +1,27 @@
+<div id="modal-create-card" class="modal">
+  <form method="post" action="/deck/create/card/">
+    <div class="modal-content">
+      <h4>Create a card</h4>
+      {% if cardform %}
+        <div>
+          {% csrf_token %}
+          {% for field in cardform %}
+          <div class="row">
+              <div class="input-field col s10 push-s1">                               
+                {{ field }}{% if not field.is_hidden %}{{ field.label_tag }}{% endif %}
+                {% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}
+                {% if field.help_text %}
+                <span class="help">{{ field.help_text|safe }}</span>
+                {% endif %}
+              </div>
+          </div>                  
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="modal-footer">
+      <input class="waves-effect waves-green btn-flat {{ theme }}-text" type="submit" value="Create"  />
+      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+    </div>
+  </form>
+</div>

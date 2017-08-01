@@ -1,7 +1,9 @@
 <ul id="room-list" class="collection with-header z-depth-1">
     <li class="collection-header">
         <h5 class="inline">Your Game Rooms</h5>
-        <a href="/deck/create/room/" class="waves-effect waves-teal btn-flat {{ theme }}-text tooltipped" data-position="top" data-tooltip="Add Another"><i class="material-icons {{ theme }}-text">add</i></a>
+        <a {% if not roomsmax %} href="/deck/create/room/"{% endif %} 
+        class="waves-effect btn-flat tooltipped{% if roomsmax %} grey-text{% else %} {{ theme }}-text{% endif %}" 
+        data-position="top" data-tooltip="{% if roomsmax %}You have the max number of rooms allowed{% else %}Add Another{% endif %}"><i class="material-icons">add</i></a>
     </li>
     {% for r in rooms %}
         <li class="collection-item" data-pk="{{ r.pk }}">
@@ -20,7 +22,7 @@
                   </p>
                 </div>
                 <div class="card-reveal">
-                  <span class="card-title">&nbsp;<i class="material-icons right">close</i></span>&nbsp;&nbsp;&nbsp;
+                  <span class="card-title">&nbsp;<i class="material-icons right">keyboard_arrow_down</i></span>&nbsp;&nbsp;&nbsp;
                   <a class="tooltipped" data-position="top" data-tooltip="Join Room" href="/deck/room/{{ r.slug }}/"><i class="material-icons">launch</i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <a class="tooltipped" data-position="top" data-tooltip="Edit" href="/deck/update/room/{{ r.slug }}/"><i class="material-icons">edit</i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <a class="tooltipped modal-trigger" data-position="top" data-tooltip="Delete" href="#modal-delete-room-{{ r.pk }}"><i class="material-icons js-remove">delete_forever</i></a>

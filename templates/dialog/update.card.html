@@ -1,0 +1,29 @@
+<div id="modal-update-card-{{ c.pk }}" class="modal">
+  <form method="post" action="/deck/update/card/{{ c.pk }}/">
+    <div class="modal-content">
+      <h4>Manage card {{ c.pk }}</h4>
+      {% if cardform %}
+        <div>
+          {% csrf_token %}
+          <div class="row">
+              <div class="input-field col s10 push-s1">                               
+                <input type="text" name="text" required="" value="{{ c.text }}" id="id_text" maxlength="255">
+                <label for="id_text" class="">Text:</label>
+              </div>
+          </div>                  
+          <div class="row">
+              <div class="input-field col s10 push-s1">                               
+                <input type="text" name="flavor_text" value="{{ c.flavor_text }}" id="id_flavor_text" maxlength="255">
+                <label for="id_flavor_text">Flavor text:</label>
+              </div>
+          </div>  
+        </div>
+      {% endif %}
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close card-delete waves-effect waves-green btn-flat red-text left" data-pk="{{ r.pk }}">Delete</a>
+        <input class="waves-effect waves-green btn-flat {{ theme }}-text" type="submit" value="Save"  />
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+      </div>
+    </form>
+</div>

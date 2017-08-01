@@ -41,3 +41,5 @@ Thumbs.db
 # Sensitive #
 ######################
 *.key
+authentication
+/deck/*.pyc

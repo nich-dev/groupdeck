@@ -37,6 +37,12 @@ class CardForm(forms.ModelForm):
         model = Card
         fields = ['text', 'flavor_text']
 
+class CardDetailForm(forms.ModelForm):
+    class Meta:
+        model = Card
+        fields = ['text', 'flavor_text', 'id']
+        widgets = {'id': forms.HiddenInput()}
+
 class CardsInDeckForm(forms.Form):
     card = forms.ModelChoiceField(
             queryset=Card.objects.filter(in_deck=False),

@@ -1,7 +1,9 @@
 <ul id="deck-list" class="collection with-header z-depth-1">
     <li class="collection-header">
         <h5 class="inline">Your Decks</h5>
-        <a class="waves-effect waves-teal btn-flat {{ theme }}-text tooltipped" data-position="top" data-tooltip="Add Another"><i class="material-icons {{ theme }}-text">add</i></a>
+        <a {% if not decksmax %} href="/deck/create/deck/"{% endif %} 
+        class="waves-effect btn-flat tooltipped{% if decksmax %} grey-text{% else %} {{ theme }}-text{% endif %}" 
+        data-position="top" data-tooltip="{% if decksmax %}You have the max number of decks allowed{% else %}Add Another{% endif %}"><i class="material-icons">add</i></a>
     </li>
     {% for d in decks %}
         <li class="collection-item" data-pk="{{ d.pk }}">
@@ -17,7 +19,7 @@
                   <p>Contains {{ d.get_count }} cards</p>
                 </div>
                 <div class="card-reveal">
-                  <span class="card-title">&nbsp;<i class="material-icons right">close</i></span>&nbsp;&nbsp;&nbsp;
+                  <span class="card-title">&nbsp;<i class="material-icons right">keyboard_arrow_down</i></span>&nbsp;&nbsp;&nbsp;
                   <a class="tooltipped" data-position="top" data-tooltip="Edit" href="#"><i class="material-icons">edit</i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <a class="tooltipped modal-trigger" data-position="top" data-tooltip="Delete" href="#modal-delete-deck-{{ d.pk }}"><i class="material-icons js-remove">delete_forever</i></a>
                 </div>

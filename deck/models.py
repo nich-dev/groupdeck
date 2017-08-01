@@ -24,6 +24,7 @@ colors = (
 )
 
 DEF_MAX_ALLOWED_CARDS = 500
+DEF_MAX_ALLOWED_CARDS_TOTAL = 2500
 DEF_MAX_ALLOWED_DECKS = 5
 DEF_MAX_ALLOWED_ROOMS = 2
 def get_max_count():
@@ -47,6 +48,13 @@ def get_max_rooms():
         else: return DEF_MAX_ALLOWED_ROOMS
     except:
         return DEF_MAX_ALLOWED_ROOMS
+def get_max_cards():
+    try:
+        if settings.MAX_ALLOWED_CARDS_TOTAL:
+            return settings.MAX_ALLOWED_CARDS_TOTAL
+        else: return DEF_MAX_ALLOWED_CARDS_TOTAL
+    except:
+        return DEF_MAX_ALLOWED_CARDS_TOTAL
 # Create your models here.
 class Card(models.Model):
     text = models.CharField(max_length=255)# action text

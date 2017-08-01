@@ -1,0 +1,17 @@
+<li class="collection-item col s12 m6 l4" id="card-{{ c.pk }}" data-pk="{{ c.pk }}" data-card="{{ c.card.pk }}">
+    <div class="card">
+		<div class="card-content">
+		    <span class="card-title">{{ c.card.text }}</span> <br>
+		    <span class="{{ theme }} white-text text-darken-2">&nbsp;{{ c.count }}&nbsp;</span>
+		    <span>&nbsp;{{ c.card.flavor_text }}&nbsp;</p>
+		    <i class="material-icons action {{ theme }}-text text-darken-1 activator">edit</i>
+		    <i class="material-icons js-remove action {{ theme }}-text text-darken-1">delete</i>
+		</div>
+		<div class="card-reveal">
+            <span class="card-title arrow-down"><i class="material-icons right">keyboard_arrow_down</i></span>
+            <input type="text" name="text" required="" value="{{ c.card.text }}" id="id_text" maxlength="255" placeholder="Text">
+            <input type="text" name="flavor_text" required="" value="{{ c.card.flavor_text }}" id="id_text" maxlength="255" placeholder="Flavor Text">
+            <input type="number" name="count" required="" value="{{ c.count }}" id="id_text" maxlength="255" placeholder="Count" defaultValue="1">
+        </div>
+	</div>
+</li>

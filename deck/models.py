@@ -150,15 +150,15 @@ class Deck(models.Model):
         return self.cards
 
     def remove_card(self, card):
-        self.cards.filter(card=card).delete()
+        self.cards.filter(card=card).clear()
         return self.cards
 
     def remove_cards_by_pk(self, pk):
-        self.cards.filter(card__pk__in=pk).delete()
+        self.cards.filter(card__pk__in=pk).clear()
         return self.cards
 
     def remove_cards_by_text(self, text):
-        self.cards.filter(card__text__in=text).delete()
+        self.cards.filter(card__text__in=text).clear()
         return self.cards
 
     def get_card_count(self, text):
@@ -223,6 +223,10 @@ class Deck(models.Model):
         self.save()
         return self
 
+    def delete(self):
+        self.cards.all().update(card=None)
+        super(Deck, self).delete()
+
 class GameRoom(models.Model):
     name = models.CharField(max_length=255, unique=True)
     players = models.ManyToManyField(settings.AUTH_USER_MODEL,#users that are playing, passed the secret password
@@ -277,6 +281,13 @@ class GameRoom(models.Model):
         self.save()
         self.delete()
         return 0
+
+    def delete(self):
+        if self.deck:
+            self.deck.stop()
+            self.deck = None
+            self.save()
+        super(GameRoom, self).delete()
 
 #signals for object manipulation here
 @receiver(post_save, sender = GameRoom)

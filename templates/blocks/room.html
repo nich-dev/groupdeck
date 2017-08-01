@@ -1,12 +1,22 @@
-<div class="game-wrapper">
-    <div class="game-title"></div> 
-    <div class="cards-wrapper">
-        <div class="card front">
-            <div class="card-text"></div>
-            <div class="card-flavor">Loading Card..</div>
+<div class="game-wrapper row">
+    <div class="cards-wrapper col s12 m4" style="position:relative;">
+        <div class="card front white z-depth-2">
+            <div class="card-content black-text">
+                <p class="card-title card-text">&nbsp;</p>
+                <p class="card-flavor {{ theme }}-text text-lighten-1">Loading...</p>
+            </div>
         </div>
-        <div class="card back">
+        {% for i in deckrange2 %}
+        <div class="card back {{ theme }} lighten-4" style="top:-{{ i }}px;left:-{{ i }}px;">
             <div class="card-content"></div>
         </div>
+        {% endfor %}
+    </div>
+    <div class="deck-wrapper col s12 m4 push-m4">
+        {% for i in deckrange %}
+        <div class="card back {{ theme }} lighten-4" style="top:-{{ i }}px;left:-{{ i }}px;">
+            <div class="card-content"></div>
+        </div>
+        {% endfor %}
     </div>
 </div>

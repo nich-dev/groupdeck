@@ -49,7 +49,7 @@ ROOT_URLCONF = 'django_project.urls'
 AUTH_USER_MODEL = 'authentication.CustomUser'
 MAX_ALLOWED_CARDS = 500
 MAX_ALLOWED_DECKS = 5
-MAX_ALLOWED_ROOMS = 1
+MAX_ALLOWED_ROOMS = 5
 
 TEMPLATES = [
     {

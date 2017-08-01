@@ -103,6 +103,8 @@ class Room(TemplateView):
             return context
         context['obj'] = self.get_object()
         context['can_draw'] = self.can_draw()
+        context['deckrange'] = range(1,13,3)
+        context['deckrange2'] = reversed(range(1,13,3))
         context['title'] = 'Deck'
         return context
 
@@ -169,8 +171,64 @@ class RoomUpdate(UpdateView):
         context['pagetitle'] = 'Edit '+self.get_object().name
         return context
 
+class RoomDelete(DeleteView):
+    model = models.GameRoom
+    success_url = '/deck/'
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if self.request.user != obj.user_created:
+            raise PermissionDenied()
+        obj.delete()
+        return redirect(self.success_url)
+
 #--OBJECT MANIPULATION
 #----Deck Objects
+class DeckManage(TemplateView):
+    model = models.Deck
+    success_url = '/deck/'
+    
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return ['deck.html']
+        else:
+            return ['container/deck.html']
+        
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(DeckManage, self).dispatch(*args, **kwargs)
+
+    def get_object(self, *args, **kwargs):
+        try:
+            slug = self.kwargs['slug']
+        except Exception, e:
+            return None
+        else:
+            obj = models.Deck.objects.get(slug = slug)
+            if obj.user_created != self.request.user:
+                raise PermissionDenied() #or Http404
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(DeckManage, self).get_context_data(**kwargs)
+        obj = self.get_object()
+        context['obj'] = obj
+        context['title'] = 'Deck'
+        context['theme'] = get_theme(self.request)
+        context['pagetitle'] = 'Manage Deck'
+        if obj: context['pagetitle'] = context['pagetitle'] + ": " +str(obj.name)
+        return context
+
+class DeckDelete(DeleteView):
+    model = models.Deck
+    success_url = '/deck/'
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if self.request.user != obj.user_created:
+            raise PermissionDenied()
+        obj.delete()
+        return redirect(self.success_url)
 
 #--OBJECT MANIPULATION
 #----Card Objects
@@ -181,9 +239,9 @@ class CardCreate(CreateView):
     
     def get_template_names(self):
         if self.request.is_ajax():
-            return ['forms/room.html']
+            return ['forms/card.html']
         else:
-            return ['container/form.room.html']
+            return ['container/form.card.html']
         
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -211,9 +269,9 @@ class CardUpdate(UpdateView):
     
     def get_template_names(self):
         if self.request.is_ajax():
-            return ['forms/room.html']
+            return ['forms/card.html']
         else:
-            return ['container/form.room.html']
+            return ['container/form.card.html']
         
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):

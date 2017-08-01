@@ -63,12 +63,10 @@
             setTimeout(function () {
                 app.el.card.find('.card-text').text(text);
                 app.el.card.find('.card-flavor').text(flavor);
-                wrapper.addClass('switch-pt2');
                 setTimeout(function () {
                     app.el.wrapper
-                    .removeClass('switch-pt1')
-                    .removeClass('switch-pt2');
-                }, 370);
+                    .removeClass('switch-pt1');
+                }, 570);
             }, 375);
         },
         setRoomTitle: function () {

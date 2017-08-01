@@ -394,6 +394,15 @@ Returns the deck in the 'in game' view.
 Returns the deck in a semi-compressed view of only detail relevant for play.
 Same as is found in the 'decks' objects
 
+## Settings
+> Include in your setting.py file
+
+
+#### Limit amount of objects a user can own
+* MAX_ALLOWED_CARDS (default 2500)
+* MAX_ALLOWED_DECKS (default 5)
+* MAX_ALLOWED_ROOMS (default 2)
+
 ### We include a normal views.py file 
 * This returns normal html
 * You can include the urls.py by adding "from deck import urls as deck_urls" to your urls.py and including it

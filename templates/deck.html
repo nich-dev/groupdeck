@@ -1,0 +1,57 @@
+<div id="content">
+  <div class="section no-pad-bot">
+    <div class="container">
+      <div class="row bottom-border">
+        <span class="col thin small-title s12 m3">{{ pagetitle }}</span>
+        {% if obj %}
+        <div class="col s12 m9">
+          <a href="/deck/delete/deck/{{ obj.slug }}/" class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer modal-trigger no-ajaxy">Delete Deck</a>
+          <a href="/deck/" class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer modal-trigger">Random Card</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <div class="row dash z-depth-1">
+        <div class="row">
+          <div class="input-field col s11 push-s1 m5 l4">                   
+            <input type="text" name="name" required="" id="id_name" maxlength="255" {% if obj %}value="{{ obj.name }}"{% endif %}>
+            <label for="id_name" class="">Name:</label>
+          </div>
+          <div class="input-field col s12 m7 l8">
+            <i class="material-icons prefix {{ theme }}-text">search</i>
+            <input type="text" id="autocomplete-input-search" class="autocomplete">
+            <label for="autocomplete-input" class="{{ theme }}-text">Search cards</label>
+            <!-- Search cards, and notify if in deck or not -->
+            <!-- CARDS: Have buttons to add into deck -->
+          </div>
+        </div>
+        <div class="row">
+          <!-- DECK -->
+          <div class="col s12 l10 push-l1">
+            <h5 class="inline">Cards in Deck</h5>
+            <a {% if not cardsmax %} href="#modal-create-card"{% endif %} 
+            class="waves-effect btn-flat tooltipped{% if cardsmax %} grey-text{% else %} {{ theme }}-text modal-trigger{% endif %}" 
+            data-position="top" data-tooltip="{% if cardsmax %}You have the max number of cards allowed{% else %}Add Another{% endif %}"><i class="material-icons">add</i></a>
+          </div>
+          <div class="col s12">
+            <ul id="deck-card-list" class="collection">
+            {% for c in obj.cards.all %}
+              {% include 'blocks/deck.card.html' %}
+            {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% include 'dialog/create.card.html' %}
+  </div>
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large {{ theme }} darken-4">
+      <i class="large material-icons">save</i>
+    </a>
+  </div>
+</div>

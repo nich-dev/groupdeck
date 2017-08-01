@@ -39,6 +39,7 @@ var initialize_generic = function(){
     $(".dropdown-button").dropdown({ hover: false });
     //broken with jquery 3, wait til next release
     //$('.parallax').parallax();
+    $('.lean-overlay').hide();
     $('#content .modal-trigger').leanModal();
     $('.material-tooltip').remove();
     $('.tooltipped').tooltip({delay: 50});
@@ -75,5 +76,15 @@ var init_forms = function(){
     if ($('#card-list').length > 0) {
         var list = document.getElementById('card-list');
         var cardList = Sortable.create(list);
+    };
+    if ($('#deck-card-list').length > 0) {
+        var list = document.getElementById('deck-card-list');
+        var cardList = Sortable.create(list, {
+            filter: '.js-remove',
+            onFilter: function (evt) {
+                var el = cardList.closest(evt.item);
+                el && el.parentNode.removeChild(el);
+            }
+        });
     };
 }

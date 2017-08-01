@@ -729,7 +729,8 @@ li.export{
 	padding: 1em;
 }
 
-#card-list li {
+#card-list li,
+#deck-card-list li {
 	float: left;
 }
 
@@ -739,7 +740,8 @@ li.export{
 }
 
 #room-list .collection-item p,
-#deck-list .collection-item p {
+#deck-list .collection-item p,
+#deck-card-list .collection-item p {
 	color: #999;
 }
 
@@ -756,7 +758,8 @@ li.export{
 	#room-list .card .card-content,
 	#deck-list .card .card-content,
 	#room-list .card .card-reveal,
-	#deck-list .card .card-reveal
+	#deck-list .card .card-reveal,
+	#deck-card-list .card .card-reveal
 	{
 		padding:.35em;
 	}
@@ -764,6 +767,7 @@ li.export{
 	#room-list .card .card-reveal,
 	#deck-list .card .card-reveal{
 		overflow:hidden;
+		opacity:0.8;
 	}
 
 #addCard {
@@ -771,12 +775,63 @@ li.export{
 	color: #fff;
 }
 
-.inline{
-	display: inline-block;
+#deck-card-list .collection-item i.action {
+	-webkit-transition: opacity .2s;
+	transition: opacity .2s;
+	opacity: 0;
+	display: block;
+	cursor: pointer;
+	right: 10px;
+	position: absolute;
+	font-style: normal;
 }
 
-.card-reveal{
-	opacity:0.8;
+	#deck-card-list .collection-item i.action:first-of-type {
+		top: 10px;
+	}
+
+	#deck-card-list .collection-item i.action:nth-of-type(2) {
+		top: 48px;
+	}
+
+	#deck-card-list .collection-item:hover i.action {
+		opacity: .7;
+	}
+
+	#deck-card-list .collection-item i.action:hover {
+		opacity: 1;
+	}
+
+	#deck-card-list .card {
+		cursor:move;
+		min-height: 5em;
+	}
+
+		#deck-card-list .card .card-content {
+		padding: 40px 20px;
+	}
+
+	#deck-card-list input {
+		width: 90%;
+		padding: 2px 6px;
+		height: 1em;
+	}
+		#deck-card-list input[type="number"] {
+			width: 5em;
+			padding: 2px 6px;
+			height: 1em;
+		}
+
+.arrow-down {
+	display: block;
+	cursor: pointer;
+	right: 10px;
+	top :10px;
+	position: absolute;
+}
+
+.inline{
+	display: inline-block;
 }
 
 /* GAME ROOM */
@@ -786,51 +841,41 @@ li.export{
   box-sizing: border-box;
 }
 
-.cards-wrapper>.card {
-  border: solid 3px #ccc;
-  position: relative;
+.card .card-text {
+	border-bottom: 1px solid #ccc;
+	width: 100%;
+	padding: .25em .45em .75em .45em;
+}
+
+.card p.card-flavor {
+	padding: 1em .75em;
+}
+
+.cards-wrapper > .card, 
+.deck-wrapper > .card  {
   display: table;
-  font-weight: 700;
-  font-size: 20px;
   width: 250px;
   height: 350px;
-  background: #fff;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transform-origin: bottom center;
   z-index: 4;
   user-select: none;
   cursor: pointer;
 }
 
-.cards-wrapper>.card.front {
+.cards-wrapper > .card.front {
   z-index: 5;
+  position: absolute;
+}
+
+.cards-wrapper > .card.back, 
+.deck-wrapper > .card.back  {
+  position: absolute;
 }
 
 .cards-wrapper>.card>.card-text {
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-  padding-bottom: 25px;
-  opacity: 1;
   transition: opacity 250ms ease;
 }
 
 .cards-wrapper>.card .card-flavor {
-  position: absolute;
-  left: 0;
-  font-weight: 400;
-  font-size: .8em;
-  width: 100%;
-  bottom: 25%;
-  text-align: center;
-  color: #999;
-  font-style: italic;
   transition: opacity 250ms ease;
 }
 
@@ -859,13 +904,13 @@ li.export{
 
 @keyframes switch-card-pt1 {
   0% {
-    transform: translate(-50%, -50%);
+    transform: translate(0, 0);
   }
   99% {
     z-index: 5;
   }
   100% {
-    transform: translate(calc(-50% - 250px), -50%) rotate(-12.5deg);
+    transform: translate(calc(250px), 0) rotate(-12.5deg);
     z-index: 3;
   }
 }

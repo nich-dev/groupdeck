@@ -23,16 +23,18 @@ class CardViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         since = self.request.query_params.get('since', None)
         search = self.request.query_params.get('search', None)
-        own = str2bool(self.request.query_params.get('own', True))
+        own = self.request.query_params.get('own', None)
         queryset = models.Card.objects.filter(in_deck=False)
 
-        if own:
+        if own is not None:
+            own = str2bool(own)
             queryset = models.Card.objects.filter(in_deck=False, user_created = self.request.user)
         if since is not None:
             last_time = datetime.strptime(since, '%Y-%m-%d %H:%M:%S')
             queryset = queryset.filter(date_edited__gte=last_time)
         if search is not None:
-            queryset = queryset.filter(text__icontains = search).order('text').distinct()
+            #queryset = queryset.filter(text__icontains = search).order_by('text').distinct('text')
+            queryset = queryset.filter(text__icontains = search).order_by('text').distinct()
             
         return queryset
 
@@ -132,14 +134,15 @@ class DeckViewSet(viewsets.ModelViewSet):
         serializer = serializers.AddCardToDeckSerializer(data=request.data, many=True)
         if serializer.is_valid():
             for d in serializer.data:
+                print d
                 try: #try to find card and add
-                    c = models.Card.objects.get(pk=d['card'])
+                    c = models.Card.objects.get(pk=d['card']['pk'])
                     if c.user_created is not request.user:
                         c = models.Card(text = c.text, flavor_text = c.flavor_text, user_created = request.user)
                         c.save()
                     obj.add_card(c, d['count'])
                 except: 
-                    c = Card(text=d['text'], flavor_text=d['flavor_text'], user_created=request.user)
+                    c = models.Card(text=d['card']['text'], flavor_text=d['card']['flavor_text'], user_created=request.user)
                     c.save()
                     obj.add_card(c, d['count'], True)
             return Response(serializers.DeckSimpleSerializer(obj, many=False).data)
@@ -182,11 +185,22 @@ class DeckViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
+    def create(self, request):
+        serializer = serializers.DeckCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            deck = serializer.save()
+            deck.user_created = request.user
+            deck.save()
+            return Response(serializers.DeckSimpleSerializer(deck, many=False).data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
     def retrieve(self, request, slug=None):
         queryset = self.get_queryset()
         deck = get_object_or_404(queryset, slug=slug)
         serializer = serializers.DeckSerializer(deck)
-        return Response(serializer.data)
+        return Response(serializer.data)    
 
 class GameRoomViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GameRoomSimpleSerializer

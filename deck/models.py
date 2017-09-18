@@ -91,7 +91,7 @@ class CardInDeck(models.Model):
         super( CardInDeck, self ).save( *args, **kw )
 
     def __unicode__(self):
-        return '%s (%s)' % (self.card.text[:50], str(self.count))
+        return '%s (%s)' % (self.card, str(self.count))
     
 
 class Deck(models.Model):
@@ -135,6 +135,7 @@ class Deck(models.Model):
 
     def limit_count(self, count):
         total_count = self.get_count()
+        if not total_count: total_count = 0
         if total_count+count > get_max_count():
             count = get_max_count() - total_count
         return count
@@ -146,7 +147,7 @@ class Deck(models.Model):
                 card.save()
             c = CardInDeck(card=card, count=count)
             c.save()
-            cards.add(c)
+            self.cards.add(c)
         return self.cards
 
     def remove_card(self, card):

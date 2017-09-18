@@ -1,11 +1,11 @@
-<div id="content">
+<div id="content" class="manage-deck">
   <div class="section no-pad-bot">
     <div class="container">
       <div class="row bottom-border">
-        <span class="col thin small-title s12 m3">{{ pagetitle }}</span>
+        <span class="col thin small-title s12 m3 pagetitle">{{ pagetitle }}</span>
         {% if obj %}
         <div class="col s12 m9">
-          <a href="/deck/delete/deck/{{ obj.slug }}/" class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer modal-trigger no-ajaxy">Delete Deck</a>
+          <a href="/deck/delete/deck/{{ obj.slug }}/" class="deck-delete btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer modal-trigger no-ajaxy" data-slug="{{ obj.slug }}">Delete Deck</a>
           <a href="/deck/" class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer modal-trigger">Random Card</a>
         </div>
         {% endif %}
@@ -27,6 +27,12 @@
             <label for="autocomplete-input" class="{{ theme }}-text">Search cards</label>
             <!-- Search cards, and notify if in deck or not -->
             <!-- CARDS: Have buttons to add into deck -->
+            <div id="autocomplete-results" class="z-depth-2">
+               <a id="autocomplete-results-close" 
+               class="btn-floating waves-effect waves-light {{ theme }} lighten-1"><i class="material-icons">clear</i></a>
+              <ul>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="row">
@@ -47,10 +53,40 @@
         </div>
       </div>
     </div>
-    {% include 'dialog/create.card.html' %}
+    <div id="modal-create-card" class="modal">
+      <form id="create-card-form">
+        <div class="modal-content">
+          <h4>Create a card</h4>
+          {% if cardform %}
+            <div>
+              {% csrf_token %}
+              <div class="row">
+                  <div class="input-field col s10 push-s1">        
+                    <input type="text" name="text" required="" id="id_text_add"><label for="id_text_add" class="">Text:</label>
+                  </div>
+              </div>   
+              <div class="row">
+                  <div class="input-field col s10 push-s1">        
+                    <input type="text" name="flavor_text" required="" id="id_flavor_text_add"><label for="id_flavor_text_add">Flavor text:</label>
+                  </div>
+              </div>  
+              <div class="row">
+                  <div class="input-field col s10 push-s1">        
+                    <input type="number" name="amount" required="" id="id_amount_add"><label for="id_amount"_add>Amount:</label>
+                  </div>
+              </div>     
+            </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer">
+          <button class="waves-effect waves-green btn-flat {{ theme }}-text" id="deck-create-card">Create</button>
+          <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>
+      </form>
+    </div>
   </div>
   <div class="fixed-action-btn">
-    <a class="btn-floating btn-large {{ theme }} darken-4">
+    <a class="btn-floating btn-large {{ theme }} darken-4waves-effect waves-green">
       <i class="large material-icons">save</i>
     </a>
   </div>

@@ -37,6 +37,11 @@ class CardForm(forms.ModelForm):
         model = Card
         fields = ['text', 'flavor_text']
 
+class CardDeckForm(forms.Form):
+    text = forms.CharField()
+    flavor_text = forms.CharField()
+    amount = forms.IntegerField()
+
 class CardDetailForm(forms.ModelForm):
     class Meta:
         model = Card

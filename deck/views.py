@@ -216,6 +216,7 @@ class DeckManage(TemplateView):
         context['title'] = 'Deck'
         context['theme'] = get_theme(self.request)
         context['pagetitle'] = 'Manage Deck'
+        context['cardform'] = forms.CardDeckForm()
         if obj: context['pagetitle'] = context['pagetitle'] + ": " +str(obj.name)
         return context
 

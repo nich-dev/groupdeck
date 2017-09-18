@@ -834,6 +834,30 @@ li.export{
 	display: inline-block;
 }
 
+#autocomplete-results{
+	position: absolute;
+	margin-left: 3rem;
+	z-index: 999;
+	background: #fff;
+}
+	#autocomplete-results ul li{
+		padding:.6rem 1.8rem;
+		-webkit-transition: background .3s; /* Safari */
+    	transition: background .3s;
+    	background: #fff;
+	}
+		#autocomplete-results ul li:hover{
+			background: #eee;
+			cursor:pointer;
+		}
+	#autocomplete-results-close {
+		position: absolute;
+		top: -1rem;
+		left: -2rem;
+		display: none;
+	}
+
+
 /* GAME ROOM */
 *,
 *:before,

@@ -32,13 +32,13 @@
             }
         },
         updateDeck: function () {
-            app.api.rooms.play_view(app.slug, function (cards) {
+            app.api.rooms.play_view(app.slug, null, function (cards) {
                 app.cards = cards;
                 app.setDiscardPile();
             });
         },
         updateCurrentCard: function () {
-                app.api.rooms.get_current_card(app.slug, function (current_card) {
+                app.api.rooms.get_current_card(app.slug, null, function (current_card) {
                     if ((app.current_card||{}).pk != current_card.pk) {
                         app.current_card = current_card;
                         app.updateDeck();
@@ -90,7 +90,7 @@
         startTimers: function () {
             setInterval(function () {
                 app.updateCurrentCard();
-            }, 1500);
+            }, 2500);
         },
 
         readyListeners: [],

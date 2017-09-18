@@ -88,6 +88,11 @@ class DeleteCardsInDeckSerializer(serializers.Serializer):
         child=serializers.IntegerField()
     )
 
+class DeckCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Deck
+        fields = ('name',)
+
 #GAME ROOM SERIALIZERS-------------
 class GameRoomSerializer(serializers.ModelSerializer):
     deck = DeckSerializer(many=False, read_only=True)

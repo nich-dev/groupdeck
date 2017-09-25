@@ -238,7 +238,7 @@ class GameRoomViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST)
 
     #draws a card if able and returns that card
-    @detail_route(permission_classes=[deckpermissions.CanDraw, deckpermissions.IsPlayer])
+    @detail_route(permission_classes=[deckpermissions.CanDraw])
     def draw_card(self, request, slug=None):
         obj = self.get_object()
         self.check_object_permissions(request, obj)

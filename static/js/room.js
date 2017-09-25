@@ -3,6 +3,7 @@
     var wrapper = $('.cards-wrapper');
     var card = $('.card.front');
     var title = $('.brand-logo');
+    var key, qs;
 
     var app = {
         el: {
@@ -19,6 +20,7 @@
             if (app.slug != '') {
                 app.updateDeck();
                 app.updateCurrentCard();
+                app.buildQs();
 
                 app.attachListeners();
                 app.startTimers();
@@ -26,19 +28,26 @@
         },
         getRoomSlug: function () {
             var parts = document.location.href.toString().split('/');
+            console.log(parts);
             app.slug = parts.pop();
-            if (app.slug == '') {
+            if (app.slug == '' && parts.length > 6) {
+                key = parts.pop();
+                app.slug = parts.pop();
+                console.log(key);
+                console.log(app.slug);
+            }
+            else {
                 app.slug = parts.pop();
             }
         },
         updateDeck: function () {
-            app.api.rooms.play_view(app.slug, null, function (cards) {
+            app.api.rooms.play_view(app.slug, qs, function (cards) {
                 app.cards = cards;
                 app.setDiscardPile();
             });
         },
         updateCurrentCard: function () {
-                app.api.rooms.get_current_card(app.slug, null, function (current_card) {
+                app.api.rooms.get_current_card(app.slug, qs, function (current_card) {
                     if ((app.current_card||{}).pk != current_card.pk) {
                         app.current_card = current_card;
                         app.updateDeck();
@@ -47,7 +56,7 @@
                 });
         },
         drawCard: function () {
-            app.api.rooms.draw_card(app.slug, function (new_card) {
+            app.api.rooms.draw_card(app.slug, qs, function (new_card) {
                 //new_card = app.current_card
                 if (new_card.status == 'Deck is empty') {
                     alert('Yarr, ye deck is empty mate!');
@@ -81,8 +90,6 @@
         setDiscardPile: function () {
 
         },
-
-
         attachListeners: function () {
             app.el.card
             .on('click', app.drawCard);
@@ -92,7 +99,9 @@
                 app.updateCurrentCard();
             }, 2500);
         },
-
+        buildQs: function () {
+            qs = {'key':key};
+        },
         readyListeners: [],
         whenReady: function (callback) {
             app.readyListeners.push(callback);

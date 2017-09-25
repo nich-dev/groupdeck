@@ -56,14 +56,19 @@ class Room(TemplateView):
             slug = self.kwargs['slug']
         except Exception, e:
             try:
-                if request.POST['choose_previous']:
-                    room = models.GameRoom.objects.get(pk = request.POST['choose_previous'])
-                else:
+                room = None
+                try:
+                    if request.POST['choose_previous']:
+                        room = models.GameRoom.objects.get(pk = request.POST['choose_previous'])
+                    else:
+                        room = models.GameRoom.objects.get(name = request.POST['name'])
+                except:
                     room = models.GameRoom.objects.get(name = request.POST['name'])
                 if request.POST['password'] and room.secret:
                     return redirect('/deck/room/'+room.slug+'/'+request.POST['password']+'/')
                 return redirect('/deck/room/'+room.slug+'/')
             except Exception, e:
+                print e
                 return redirect('/deck/')
         return super(Room, self).post(*args, **kwargs)
 

@@ -5,7 +5,7 @@ Sometimes you want to draw a card from a deck in a group of people online. This 
 ## Dependencies
 
 * django
-* djangorestframwork 
+* djangorestframework 
 * django-searchable-select (for the admin panel)
 * django-braces (for permissions)
 
@@ -395,7 +395,7 @@ Returns the deck in a semi-compressed view of only detail relevant for play.
 Same as is found in the 'decks' objects
 
 ## Settings
-> Include in your setting.py file
+> Include in your settings.py file
 
 
 #### Limit amount of objects a user can own

@@ -598,91 +598,6 @@ body {
 	display: none;
 }
 
-/* Printing */
-@page {
-  size: Letter;
-  margin: 0;
-}
-@media print {
-	.navbar-fixed,
-	#connect-footer,
-	#links-footer, 
-	#print-fab, 
-	#expand-fab,
-	.page-footer{
-		display: none;
-	}
-
-	.print-sheet{
-		/*height: 10.5in;*/
-		overflow: hidden;
-		page-break-after: always;
-		margin: 1em;
-		min-height: 10in;
-	}
-
-	#print-headpage{
-		min-height: 10.5in;
-	}
-
-	.print-border-1{
-		border-width: 1px;
-	    border-top: 1px #e0e0e0 solid;
-	    border-right: 1px #e0e0e0 solid;
-	} .print-border-2{
-		border-width: 1px;
-	    border-top: 1px #e0e0e0 solid;
-	} .print-border-3{
-		border-width: 1px;
-	    border-top: 1px #e0e0e0 solid;
-	}/*.bottom-border {
-		border: 0;
-	}*/
-
-	.row.print-title{
-		color: #000 !important;
-		font-weight: 400;
-	}
-
-	.container{
-		width: 100%;
-	}
-
-	.row .col.m6 {
-	  width: 50%;
-	  margin-left: auto;
-	  left: auto;
-	  right: auto;
-	}
-	.row .col.m4 {
-	    width: 33.3333333333%;
-	    margin-left: auto;
-	    left: auto;
-	    right: auto;
-	  }
-	.row .col.m3 {
-	  width: 25%;
-	  margin-left: auto;
-	  left: auto;
-	  right: auto;
-	}
-	.row .col.offset-m2 {
-    margin-left: 16.6666666667%;
-    }
-	.row .col.offset-m3 {
-	    margin-left: 25%;
-	}
-	.z-depth-1 {
-	  box-shadow: none !important;
-	}
-	.copyright{
-		display: block;
-		position: fixed;
-		bottom: 5px;
-		right: 5px;
-		color: #444;
-	}
-}
 
 #export-container{
 	width:95%;
@@ -893,6 +808,14 @@ li.export{
 .cards-wrapper > .card.back, 
 .deck-wrapper > .card.back  {
   position: absolute;
+}
+
+@media only screen and (max-width: 801px) {
+	.cards-wrapper > .card.back, 
+	.cards-wrapper > .card.front, 
+	.deck-wrapper > .card.back  {
+	  margin-left: 3rem;
+	}
 }
 
 .cards-wrapper>.card>.card-text {

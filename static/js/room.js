@@ -3,13 +3,17 @@
     var wrapper = $('.cards-wrapper');
     var card = $('.card.front');
     var title = $('.brand-logo');
+    var btnDraw = $('#btn-draw');
+    var btnRefresh = $('#btn-rfs');
     var key, qs;
 
     var app = {
         el: {
             wrapper: wrapper,
             card: card,
-            title: title
+            title: title,
+            btnDraw: btnDraw,
+            btnRefresh: btnRefresh
         },
         start: function () {
             app.getRoomSlug();
@@ -17,6 +21,8 @@
             app.el.wrapper = $('.cards-wrapper');
             app.el.card = $('.card.front');
             app.el.title = $('.brand-logo');
+            app.el.btnDraw = $('#btn-draw');
+            app.el.btnRefresh = $('#btn-rfs');
             if (app.slug != '') {
                 app.updateDeck();
                 app.updateCurrentCard();
@@ -93,11 +99,15 @@
         attachListeners: function () {
             app.el.card
             .on('click', app.drawCard);
+            app.el.btnDraw
+            .on('click', app.drawCard);
+            app.el.btnRefresh
+            .on('click', app.updateCurrentCard);
         },
         startTimers: function () {
             setInterval(function () {
                 app.updateCurrentCard();
-            }, 2500);
+            }, 5000);
         },
         buildQs: function () {
             qs = {'key':key};

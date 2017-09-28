@@ -8,8 +8,8 @@
       <div class="row bottom-border">
         <span class="col thin small-title s12 m3">{{ obj.name }}</span>
         <div class="col s12 m9">
-          {% if can_draw %}<button class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer">Draw</button>{% endif %}
-          <button class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer">Refresh</button>
+          {% if can_draw %}<button id="btn-draw" class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer">Draw</button>{% endif %}
+          <button id="btn-rfs" class="btn waves-effect waves-light {{ theme }} lighten-1 theme right spacer">Refresh</button>
         </div>
       </div>
     </div>

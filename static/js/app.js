@@ -40,7 +40,7 @@ var initialize_generic = function(){
     //broken with jquery 3, wait til next release
     //$('.parallax').parallax();
     $('.lean-overlay').hide();
-    $('#content .modal-trigger').leanModal();
+    $('.modal-trigger').leanModal();
     $('.material-tooltip').remove();
     $('.tooltipped').tooltip({delay: 50});
     $('#spinner-load').stop( true, true ).fadeOut(200);
